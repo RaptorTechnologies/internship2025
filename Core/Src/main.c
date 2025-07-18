@@ -22,6 +22,8 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "stdio.h"
+#include "queue.h"
+#include "uart.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -31,11 +33,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#ifdef __GNUC__
-#define PUTCHAR_PROTOTYPE int __io_putchar(int ch)
-#else
-#define PUTCHAR_PROTOTYPE int fputc(int ch, FILE *f)
-#endif /* __GNUC__ */
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -45,9 +43,12 @@
 
 /* Private variables ---------------------------------------------------------*/
 UART_HandleTypeDef huart4;
-
 /* USER CODE BEGIN PV */
-__IO uint8_t char_rx;
+enum state {
+	WAITING_OPTION,
+	GOT_OPTION
+};
+enum state state = WAITING_OPTION;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -97,9 +98,21 @@ int main(void) {
 
 	/* Infinite loop */
 	/* USER CODE BEGIN WHILE */
+	uint8_t current_command;
 	while (1) {
 		/* USER CODE END WHILE */
+		if (queue_pop(&command_queue, &current_command)) {
+			if (state == WAITING_OPTION) {
+				uint8_t num = current_command - '0';
+				if (num >= 1 && num <= 4) {
+					printf("Received option: %c\n", current_command);
+					state = GOT_OPTION;
+				} else {
+					printf("Unknown option: %c\n", current_command);
 
+				}
+			}
+		}
 		/* USER CODE BEGIN 3 */
 	}
 	/* USER CODE END 3 */
@@ -169,10 +182,7 @@ static void MX_UART4_Init(void) {
 		Error_Handler();
 	}
 	/* USER CODE BEGIN UART4_Init 2 */
-	if (HAL_UART_Receive_IT(&huart4, &char_rx, 1) != HAL_OK) {
-		Error_Handler();
-	}
-	HAL_GPIO_WritePin(GPIOG, GPIO_PIN_6, 0);
+	start_UART(&huart4);
 	/* USER CODE END UART4_Init 2 */
 }
 
@@ -207,25 +217,7 @@ static void MX_GPIO_Init(void) {
 }
 
 /* USER CODE BEGIN 4 */
-PUTCHAR_PROTOTYPE {
-	HAL_UART_Transmit(&huart4, (uint8_t*) &ch, 1, 0xFFFF);
 
-	return ch;
-}
-
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
-	if (huart->Instance == UART4) {
-		uint8_t num = char_rx - '0';
-		if (num >= 1 && num <= 4) {
-			printf("Received option: %c\n", char_rx);
-		} else {
-			printf("Unknown option: %c\n", char_rx);
-			if (HAL_UART_Receive_IT(&huart4, &char_rx, 1) != HAL_OK) {
-				Error_Handler();
-			}
-		}
-	}
-}
 /* USER CODE END 4 */
 
 /**
