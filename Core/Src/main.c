@@ -43,10 +43,10 @@
 
 /* Private variables ---------------------------------------------------------*/
 UART_HandleTypeDef huart4;
+
 /* USER CODE BEGIN PV */
 enum state {
-	WAITING_OPTION,
-	GOT_OPTION
+	WAITING_OPTION, GOT_OPTION
 };
 enum state state = WAITING_OPTION;
 /* USER CODE END PV */
@@ -101,18 +101,7 @@ int main(void) {
 	uint8_t current_command;
 	while (1) {
 		/* USER CODE END WHILE */
-		if (queue_pop(&command_queue, &current_command)) {
-			if (state == WAITING_OPTION) {
-				uint8_t num = current_command - '0';
-				if (num >= 1 && num <= 4) {
-					printf("Received option: %c\n", current_command);
-					state = GOT_OPTION;
-				} else {
-					printf("Unknown option: %c\n", current_command);
 
-				}
-			}
-		}
 		/* USER CODE BEGIN 3 */
 	}
 	/* USER CODE END 3 */
@@ -171,7 +160,7 @@ static void MX_UART4_Init(void) {
 
 	/* USER CODE END UART4_Init 1 */
 	huart4.Instance = UART4;
-	huart4.Init.BaudRate = 115200;
+	huart4.Init.BaudRate = BAUD_RATE;
 	huart4.Init.WordLength = UART_WORDLENGTH_9B;
 	huart4.Init.StopBits = UART_STOPBITS_1;
 	huart4.Init.Parity = UART_PARITY_EVEN;
@@ -184,6 +173,7 @@ static void MX_UART4_Init(void) {
 	/* USER CODE BEGIN UART4_Init 2 */
 	start_UART(&huart4);
 	/* USER CODE END UART4_Init 2 */
+
 }
 
 /**
@@ -202,14 +192,14 @@ static void MX_GPIO_Init(void) {
 	__HAL_RCC_GPIOG_CLK_ENABLE();
 
 	/*Configure GPIO pin Output Level */
-	HAL_GPIO_WritePin(GPIOG, GPIO_PIN_6, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(Error_GPIO_Port, Error_Pin, GPIO_PIN_RESET);
 
-	/*Configure GPIO pin : PG6 */
-	GPIO_InitStruct.Pin = GPIO_PIN_6;
+	/*Configure GPIO pin : Error_Pin */
+	GPIO_InitStruct.Pin = Error_Pin;
 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
 	GPIO_InitStruct.Pull = GPIO_PULLDOWN;
 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-	HAL_GPIO_Init(GPIOG, &GPIO_InitStruct);
+	HAL_GPIO_Init(Error_GPIO_Port, &GPIO_InitStruct);
 
 	/* USER CODE BEGIN MX_GPIO_Init_2 */
 
@@ -229,7 +219,7 @@ void Error_Handler(void) {
 	/* User can add his own implementation to report the HAL error return state */
 	__disable_irq();
 	while (1) {
-		HAL_GPIO_TogglePin(GPIOG, GPIO_PIN_6);
+		HAL_GPIO_TogglePin(Error_GPIO_Port, Error_Pin);
 		for (int i = 0; i < 100000; ++i)
 			;
 	}

@@ -57,6 +57,9 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define BAUD_RATE 115200
+#define Error_Pin GPIO_PIN_6
+#define Error_GPIO_Port GPIOG
 
 /* USER CODE BEGIN Private defines */
 
