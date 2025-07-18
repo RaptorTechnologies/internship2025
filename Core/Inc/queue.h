@@ -15,12 +15,12 @@
 // Circular queue
 typedef struct {
 	uint8_t queue[QUEUE_SIZE];
-	int top;
-	int bottom;
-} queue;
+	uint32_t top;
+	uint32_t bottom;
+} queue_t;
 
-void queue_init(queue *q);
-bool queue_push(queue *q, uint8_t elem);
-bool queue_pop(queue *q, uint8_t *elem);
+void queue_init(queue_t *q);
+void queue_push_overwrite(queue_t *q, uint8_t elem);
+bool queue_pop(queue_t *q, uint8_t *elem);
 
 #endif /* INC_QUEUE_H_ */

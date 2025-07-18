@@ -18,12 +18,13 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "usart.h"
+#include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "stdio.h"
 #include "queue.h"
-#include "uart.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -42,7 +43,6 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-UART_HandleTypeDef huart4;
 
 /* USER CODE BEGIN PV */
 enum state {
@@ -53,8 +53,6 @@ enum state state = WAITING_OPTION;
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
-static void MX_GPIO_Init(void);
-static void MX_UART4_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -111,7 +109,6 @@ int main(void) {
 					state = GOT_OPTION;
 				} else {
 					printf("Unknown option: %c\n", current_command);
-
 				}
 			}
 		}
@@ -157,67 +154,6 @@ void SystemClock_Config(void) {
 	}
 }
 
-/**
- * @brief UART4 Initialization Function
- * @param None
- * @retval None
- */
-static void MX_UART4_Init(void) {
-
-	/* USER CODE BEGIN UART4_Init 0 */
-
-	/* USER CODE END UART4_Init 0 */
-
-	/* USER CODE BEGIN UART4_Init 1 */
-
-	/* USER CODE END UART4_Init 1 */
-	huart4.Instance = UART4;
-	huart4.Init.BaudRate = BAUD_RATE;
-	huart4.Init.WordLength = UART_WORDLENGTH_9B;
-	huart4.Init.StopBits = UART_STOPBITS_1;
-	huart4.Init.Parity = UART_PARITY_EVEN;
-	huart4.Init.Mode = UART_MODE_TX_RX;
-	huart4.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-	huart4.Init.OverSampling = UART_OVERSAMPLING_16;
-	if (HAL_UART_Init(&huart4) != HAL_OK) {
-		Error_Handler();
-	}
-	/* USER CODE BEGIN UART4_Init 2 */
-	start_UART(&huart4);
-	/* USER CODE END UART4_Init 2 */
-
-}
-
-/**
- * @brief GPIO Initialization Function
- * @param None
- * @retval None
- */
-static void MX_GPIO_Init(void) {
-	GPIO_InitTypeDef GPIO_InitStruct = { 0 };
-	/* USER CODE BEGIN MX_GPIO_Init_1 */
-
-	/* USER CODE END MX_GPIO_Init_1 */
-
-	/* GPIO Ports Clock Enable */
-	__HAL_RCC_GPIOC_CLK_ENABLE();
-	__HAL_RCC_GPIOG_CLK_ENABLE();
-
-	/*Configure GPIO pin Output Level */
-	HAL_GPIO_WritePin(Error_GPIO_Port, Error_Pin, GPIO_PIN_RESET);
-
-	/*Configure GPIO pin : Error_Pin */
-	GPIO_InitStruct.Pin = Error_Pin;
-	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-	GPIO_InitStruct.Pull = GPIO_PULLDOWN;
-	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-	HAL_GPIO_Init(Error_GPIO_Port, &GPIO_InitStruct);
-
-	/* USER CODE BEGIN MX_GPIO_Init_2 */
-
-	/* USER CODE END MX_GPIO_Init_2 */
-}
-
 /* USER CODE BEGIN 4 */
 
 /* USER CODE END 4 */
@@ -232,7 +168,7 @@ void Error_Handler(void) {
 	__disable_irq();
 	while (1) {
 		HAL_GPIO_TogglePin(Error_GPIO_Port, Error_Pin);
-		for (int i = 0; i < 100000; ++i)
+		for (uint32_t i = 0; i < 100000; ++i)
 			;
 	}
 	/* USER CODE END Error_Handler_Debug */
