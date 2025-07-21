@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "tim.h"
 #include "usart.h"
 #include "gpio.h"
 
@@ -25,6 +26,8 @@
 /* USER CODE BEGIN Includes */
 #include "stdio.h"
 #include "queue.h"
+#include "flow.h"
+#include "stm32f429xx.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -45,10 +48,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-enum state {
-	WAITING_OPTION, GOT_OPTION
-};
-enum state state = WAITING_OPTION;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -90,6 +90,7 @@ int main(void) {
 	/* Initialize all configured peripherals */
 	MX_GPIO_Init();
 	MX_UART4_Init();
+	MX_TIM5_Init();
 	/* USER CODE BEGIN 2 */
 
 	/* USER CODE END 2 */
@@ -106,9 +107,14 @@ int main(void) {
 				uint8_t num = current_command - '0';
 				if (num >= 1 && num <= 4) {
 					printf("Received option: %c\n", current_command);
-					state = GOT_OPTION;
+					start_option(num);
 				} else {
 					printf("Unknown option: %c\n", current_command);
+				}
+			} else {
+				if (current_command == 'q') {
+					printf("Quit option\n");
+					stop_options();
 				}
 			}
 		}

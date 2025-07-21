@@ -58,6 +58,11 @@ void Error_Handler(void);
 
 /* Private defines -----------------------------------------------------------*/
 #define BAUD_RATE 115200
+#define Button_Pin GPIO_PIN_13
+#define Button_GPIO_Port GPIOC
+#define Button_EXTI_IRQn EXTI15_10_IRQn
+#define Toggle_Pin GPIO_PIN_7
+#define Toggle_GPIO_Port GPIOG
 #define Error_Pin GPIO_PIN_6
 #define Error_GPIO_Port GPIOG
 
