@@ -76,6 +76,10 @@ void MX_GPIO_Init(void)
 /* USER CODE BEGIN 2 */
 void HAL_GPIO_EXTI_Callback(uint16_t pin)
 {
+  // If we have the pushbutton toggle option selected,
+  // the pin is the right one and we haven't started
+  // debouncing a previour press, we can start debouncing
+  // the current press.
   if (get_state() == PUSHBUTTON_TOGGLE &&
       pin == Button_Pin &&
       HAL_TIM_Base_GetState(&htim5) != HAL_TIM_STATE_BUSY)

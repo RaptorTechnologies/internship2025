@@ -41,9 +41,9 @@ void MX_TIM5_Init(void)
 
   /* USER CODE END TIM5_Init 1 */
   htim5.Instance = TIM5;
-  htim5.Init.Prescaler = 5000;
+  htim5.Init.Prescaler = 16000;
   htim5.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim5.Init.Period = 200;
+  htim5.Init.Period = 10;
   htim5.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim5.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim5) != HAL_OK)
@@ -109,10 +109,16 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* tim_baseHandle)
 /* USER CODE BEGIN 1 */
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
+  // Select TIM5 for debouncing and make sure the button is in the same state
+  // as it was when the EXTI interrupt was first triggered.
+  // This is checked after 10ms after the first press.
   if (htim->Instance == TIM5 &&
       HAL_GPIO_ReadPin(Button_GPIO_Port, Button_Pin) == GPIO_PIN_RESET)
   {
+    // If the button is stable, we toggle the led.
     HAL_GPIO_TogglePin(Toggle_GPIO_Port, Toggle_Pin);
+
+    // Stop the timer.
     if (HAL_TIM_Base_Stop_IT(&htim5) != HAL_OK)
     {
 	  Error_Handler();
