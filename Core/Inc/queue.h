@@ -13,10 +13,11 @@
 
 #define QUEUE_SIZE 128
 // Circular queue
-typedef struct {
-	uint8_t queue[QUEUE_SIZE];
-	uint32_t top;
-	uint32_t bottom;
+typedef struct
+{
+    uint8_t queue[QUEUE_SIZE];
+    uint32_t top;
+    uint32_t bottom;
 } queue_t;
 
 void queue_init(queue_t *q);
