@@ -107,14 +107,16 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef* tim_baseHandle)
 }
 
 /* USER CODE BEGIN 1 */
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
-	if (htim->Instance == TIM5) {
-		if (HAL_GPIO_ReadPin(Button_GPIO_Port, Button_Pin) == GPIO_PIN_RESET) {
-			HAL_GPIO_TogglePin(Toggle_GPIO_Port, Toggle_Pin);
-			if (HAL_TIM_Base_Stop_IT(&htim5) != HAL_OK) {
-				Error_Handler();
-			}
-		}
-	}
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+  if (htim->Instance == TIM5 &&
+      HAL_GPIO_ReadPin(Button_GPIO_Port, Button_Pin) == GPIO_PIN_RESET)
+  {
+    HAL_GPIO_TogglePin(Toggle_GPIO_Port, Toggle_Pin);
+    if (HAL_TIM_Base_Stop_IT(&htim5) != HAL_OK)
+    {
+	  Error_Handler();
+    }
+  }
 }
 /* USER CODE END 1 */
