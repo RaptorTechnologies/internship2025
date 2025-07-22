@@ -6,37 +6,95 @@
  */
 
 #include "flow.h"
+#include "tim.h"
 
 static state_t state = WAITING_OPTION;
 
 /**
- * @brief Set the new option to run and initialize it if necessary. If WAITING_OPTION is provided, the function will not change anything.
+ * @brief Set the new option to run and initialize it if necessary. If the current state isn't WAITING_OPTION, it stops the current option.
  * @retval None
  */
-void start_option(state_t s)
+void init_option(state_t s)
 {
-    if (s == WAITING_OPTION)
-    {
-        return;
-    }
-
     state = s;
-}
 
-/**
- * @brief Get the current state.
- * @retval None
- */
-state_t get_state(void)
-{
-    return state;
+    // Start option.
+    switch (state)
+    {
+        case WAITING_OPTION:
+            break;
+        case PUSHBUTTON_TOGGLE:
+            break;
+        case TIMER_TOGGLE:
+        {
+            if (HAL_TIM_Base_Start_IT(&htim4) != HAL_OK)
+            {
+                Error_Handler();
+            }
+        }
+            break;
+        case ADC_READING:
+            break;
+        case ADC_LED_TOGGLE:
+            break;
+        case ADC_LED_TOGGLE_PWM:
+            break;
+        default:
+            break;
+    }
 }
 
 /**
  * @brief Set the state to waiting and deinitialize the previous option if necessary.
  * @retval None
  */
-void stop_options(void)
+void deinit_options(void)
 {
+    // Stop option.
+    switch (state)
+    {
+        case WAITING_OPTION:
+            return;
+        case PUSHBUTTON_TOGGLE:
+            break;
+        case TIMER_TOGGLE:
+        {
+            if (HAL_TIM_Base_Stop_IT(&htim4) != HAL_OK)
+            {
+                Error_Handler();
+            }
+        }
+            break;
+        case ADC_READING:
+            break;
+        case ADC_LED_TOGGLE:
+            break;
+        case ADC_LED_TOGGLE_PWM:
+            break;
+        default:
+            break;
+    }
+
     state = WAITING_OPTION;
 }
+
+/**
+ * @brief Set the state.
+ * @retval None
+ */
+void set_state(state_t s) {
+    if (s != state) {
+        deinit_options();
+        init_option(s);
+    }
+}
+
+/**
+ * @brief Get the current state.
+ * @retval The state
+ */
+state_t get_state(void)
+{
+    return state;
+}
+
