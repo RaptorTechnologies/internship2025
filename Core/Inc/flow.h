@@ -10,16 +10,17 @@
 
 #include <stdbool.h>
 
-typedef enum state {
-	WAITING_OPTION = 0,
-	PUSHBUTTON_TOGGLE = 1,
-	TIMER_TOGGLE = 2,
-	ADC_READING = 3,
-	ADC_LED_TOGGLE = 4,
-	ADC_LED_TOGGLE_PWM = 5
+typedef enum
+{
+    WAITING_OPTION = 0,
+    PUSHBUTTON_TOGGLE = 1,
+    TIMER_TOGGLE = 2,
+    ADC_READING = 3,
+    ADC_LED_TOGGLE = 4,
+    ADC_LED_TOGGLE_PWM = 5
 } state_t;
 
-void start_option(state_t num);
+void start_option(state_t s);
 state_t get_state(void);
 void stop_options(void);
 
