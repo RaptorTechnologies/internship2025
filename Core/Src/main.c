@@ -113,7 +113,7 @@ int main(void)
                 if (num >= 1 && num <= 4)
                 {
                     printf("Received option: %c\n", current_command);
-                    start_option(num);
+                    set_state(num);
                 }
                 else
                 {
@@ -125,7 +125,7 @@ int main(void)
                 if (current_command == 'q')
                 {
                     printf("Quit option\n");
-                    stop_options();
+                    set_state(WAITING_OPTION);
                 }
             }
         }
