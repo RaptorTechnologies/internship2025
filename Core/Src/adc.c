@@ -144,7 +144,7 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
             // From the ADC we get values between 0 and 0xFFF (12 bit precision)
             // We normalize it by dividing with 0xFFF, then scale it to (TIMER_MAX - TIMER_MIN) and add TIMER_MIN
             htim2.Instance->ARR =
-                    (potentiometer_value * (TIMER_MAX - TIMER_MIN)) / 0x0FFF + TIMER_MIN;
+                    TIMER_MAX - (potentiometer_value * (TIMER_MAX - TIMER_MIN)) / 0x0FFF + TIMER_MIN;
 
             // If the timer is above our newly set value, we restart the count.
             if (htim2.Instance->CNT > htim2.Instance->ARR)
