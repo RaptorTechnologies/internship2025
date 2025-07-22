@@ -125,8 +125,11 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef *uartHandle)
 }
 
 /* USER CODE BEGIN 1 */
+
+// printf uses this function to write its output character by character
 PUTCHAR_PROTOTYPE
 {
+    // Transmit the character to UART4 in blocking mode with the max timeout.
     HAL_UART_Transmit(&huart4, (uint8_t*) &ch, 1, 0xFFFF);
 
     return ch;
