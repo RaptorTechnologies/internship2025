@@ -48,8 +48,8 @@ void MX_GPIO_Init(void) {
 
 	/*Configure GPIO pin : Button_Pin */
 	GPIO_InitStruct.Pin = Button_Pin;
-	GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
-	GPIO_InitStruct.Pull = GPIO_NOPULL;
+	GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+	GPIO_InitStruct.Pull = GPIO_PULLUP;
 	HAL_GPIO_Init(Button_GPIO_Port, &GPIO_InitStruct);
 
 	/*Configure GPIO pin : Toggle_Pin */
@@ -73,11 +73,9 @@ void MX_GPIO_Init(void) {
 }
 
 /* USER CODE BEGIN 2 */
-GPIO_PinState button_first_state;
 void HAL_GPIO_EXTI_Callback(uint16_t pin) {
-	if (state == OPTION_1 && pin == Button_Pin
+	if (get_state() == PUSHBUTTON_TOGGLE && pin == Button_Pin
 			&& HAL_TIM_Base_GetState(&htim5) != HAL_TIM_STATE_BUSY) {
-		button_first_state = HAL_GPIO_ReadPin(Button_GPIO_Port, Button_Pin);
 		if (HAL_TIM_Base_Start_IT(&htim5) != HAL_OK) {
 			Error_Handler();
 		}

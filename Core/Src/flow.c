@@ -7,10 +7,14 @@
 
 #include "flow.h"
 
-enum state state = WAITING_OPTION;
+static state_t state = WAITING_OPTION;
 
-void start_option(int num) {
+void start_option(state_t num) {
 	state = num;
+}
+
+state_t get_state(void) {
+	return state;
 }
 
 void stop_options(void) {

@@ -103,7 +103,7 @@ int main(void) {
 
 		/* USER CODE BEGIN 3 */
 		if (queue_pop(&command_queue, &current_command)) {
-			if (state == WAITING_OPTION) {
+			if (get_state() == WAITING_OPTION) {
 				uint8_t num = current_command - '0';
 				if (num >= 1 && num <= 4) {
 					printf("Received option: %c\n", current_command);
