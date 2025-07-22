@@ -196,7 +196,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     }
 
     // If we are doing the second task and the timer is TIM4, the interval is of 1 second.
-    if (get_state() == TIMER_TOGGLE && htim->Instance == TIM4)
+    if ((get_state() == TIMER_TOGGLE) && (htim->Instance == TIM4))
     {
         HAL_GPIO_TogglePin(Toggle_GPIO_Port, Toggle_Pin);
     }

@@ -11,22 +11,20 @@
 static state_t state = WAITING_OPTION;
 
 /**
- * @brief Set the new option to run and initialize it if necessary. If WAITING_OPTION is provided or if the current state isn't WAITING_OPTION, the function will not change anything.
+ * @brief Set the new option to run and initialize it if necessary. If the current state isn't WAITING_OPTION, it stops the current option.
  * @retval None
  */
 void start_option(state_t s)
 {
-    // We must be in WAITING_OPTION and we must go towards any other state.
-    if (s == WAITING_OPTION || state != WAITING_OPTION)
-    {
-        return;
-    }
+    stop_options();
 
     state = s;
 
     // Start option.
     switch (state)
     {
+        case WAITING_OPTION:
+            break;
         case PUSHBUTTON_TOGGLE:
             break;
         case TIMER_TOGGLE:
@@ -66,6 +64,8 @@ void stop_options(void)
     // Stop option.
     switch (state)
     {
+        case WAITING_OPTION:
+            return;
         case PUSHBUTTON_TOGGLE:
             break;
         case TIMER_TOGGLE:
