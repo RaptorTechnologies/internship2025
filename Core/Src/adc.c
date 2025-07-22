@@ -152,6 +152,10 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
                 htim2.Instance->CNT = 0;
             }
         }
+        else if (get_state() == ADC_LED_TOGGLE_PWM)
+        {
+            htim3.Instance->CCR3 = potentiometer_value;
+        }
     }
 }
 /* USER CODE END 1 */

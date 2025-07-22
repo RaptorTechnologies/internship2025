@@ -52,6 +52,11 @@ void init_option(state_t s)
         }
             break;
         case ADC_LED_TOGGLE_PWM:
+        {
+            HAL_CHECK(HAL_TIM_OC_Start_IT(&htim1, TIM_CHANNEL_1));
+            HAL_CHECK(HAL_ADC_Start_IT(&hadc3));
+            HAL_CHECK(HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3));
+        }
             break;
         default:
             break;
@@ -90,6 +95,9 @@ void deinit_options(void)
         }
             break;
         case ADC_LED_TOGGLE_PWM:
+            HAL_CHECK(HAL_TIM_OC_Stop_IT(&htim1, TIM_CHANNEL_1));
+            HAL_CHECK(HAL_ADC_Stop_IT(&hadc3));
+            HAL_CHECK(HAL_TIM_PWM_Stop(&htim3, TIM_CHANNEL_3));
             break;
         default:
             break;
