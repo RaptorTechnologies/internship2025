@@ -7,6 +7,12 @@
 
 #include "flow.h"
 #include "tim.h"
+#include "adc.h"
+
+#define HAL_CHECK(expr) \
+    if ((expr) != HAL_OK) { \
+        Error_Handler(); \
+    }
 
 static state_t state = WAITING_OPTION;
 
@@ -27,17 +33,28 @@ void init_option(state_t s)
             break;
         case TIMER_TOGGLE:
         {
-            if (HAL_TIM_Base_Start_IT(&htim4) != HAL_OK)
-            {
-                Error_Handler();
-            }
+            HAL_CHECK(HAL_TIM_Base_Start_IT(&htim4));
         }
             break;
         case ADC_READING:
+        {
+            HAL_CHECK(HAL_TIM_OC_Start_IT(&htim1, TIM_CHANNEL_1));
+            HAL_CHECK(HAL_ADC_Start_IT(&hadc3));
+        }
             break;
         case ADC_LED_TOGGLE:
+        {
+            HAL_CHECK(HAL_TIM_OC_Start_IT(&htim1, TIM_CHANNEL_1));
+            HAL_CHECK(HAL_TIM_Base_Start_IT(&htim2));
+            HAL_CHECK(HAL_ADC_Start_IT(&hadc3));
+        }
             break;
         case ADC_LED_TOGGLE_PWM:
+        {
+            HAL_CHECK(HAL_TIM_OC_Start_IT(&htim1, TIM_CHANNEL_1));
+            HAL_CHECK(HAL_ADC_Start_IT(&hadc3));
+            HAL_CHECK(HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3));
+        }
             break;
         default:
             break;
@@ -59,17 +76,26 @@ void deinit_options(void)
             break;
         case TIMER_TOGGLE:
         {
-            if (HAL_TIM_Base_Stop_IT(&htim4) != HAL_OK)
-            {
-                Error_Handler();
-            }
+            HAL_CHECK(HAL_TIM_Base_Stop_IT(&htim4));
         }
             break;
         case ADC_READING:
+        {
+            HAL_CHECK(HAL_TIM_OC_Stop_IT(&htim1, TIM_CHANNEL_1));
+            HAL_CHECK(HAL_ADC_Stop_IT(&hadc3));
+        }
             break;
         case ADC_LED_TOGGLE:
+        {
+            HAL_CHECK(HAL_TIM_OC_Stop_IT(&htim1, TIM_CHANNEL_1));
+            HAL_CHECK(HAL_TIM_Base_Stop_IT(&htim2));
+            HAL_CHECK(HAL_ADC_Stop_IT(&hadc3));
+        }
             break;
         case ADC_LED_TOGGLE_PWM:
+            HAL_CHECK(HAL_TIM_OC_Stop_IT(&htim1, TIM_CHANNEL_1));
+            HAL_CHECK(HAL_ADC_Stop_IT(&hadc3));
+            HAL_CHECK(HAL_TIM_PWM_Stop(&htim3, TIM_CHANNEL_3));
             break;
         default:
             break;
@@ -82,8 +108,10 @@ void deinit_options(void)
  * @brief Set the state.
  * @retval None
  */
-void set_state(state_t s) {
-    if (s != state) {
+void set_state(state_t s)
+{
+    if (s != state)
+    {
         deinit_options();
         init_option(s);
     }
@@ -97,4 +125,3 @@ state_t get_state(void)
 {
     return state;
 }
-
