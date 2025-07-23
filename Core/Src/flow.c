@@ -10,11 +10,9 @@
 #include "adc.h"
 
 #define HAL_CHECK(expr) \
-    do { \
-        if ((expr) != HAL_OK) { \
-            Error_Handler(); \
-        } \
-    } while (0)
+    if ((expr) != HAL_OK) { \
+        Error_Handler(); \
+    }
 
 static state_t state = WAITING_OPTION;
 
@@ -127,4 +125,3 @@ state_t get_state(void)
 {
     return state;
 }
-
