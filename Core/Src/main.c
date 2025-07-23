@@ -110,7 +110,7 @@ int main(void)
         /* USER CODE END WHILE */
 
         /* USER CODE BEGIN 3 */
-        if (queue_pop(&command_queue, &current_command))
+        if (command_queue_pop(&current_command))
         {
             if (get_state() == WAITING_OPTION)
             {

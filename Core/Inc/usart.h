@@ -41,7 +41,7 @@ extern UART_HandleTypeDef huart4;
 void MX_UART4_Init(void);
 
 /* USER CODE BEGIN Prototypes */
-extern queue_t command_queue;
+bool command_queue_pop(uint8_t *s);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus
