@@ -195,8 +195,7 @@ void Error_Handler(void)
     while (1)
     {
         HAL_GPIO_TogglePin(Error_GPIO_Port, Error_Pin);
-        for (uint32_t i = 0; i < 100000; ++i)
-            ;
+        for (uint32_t i = 0; i < 100000; ++i);
     }
     /* USER CODE END Error_Handler_Debug */
 }
