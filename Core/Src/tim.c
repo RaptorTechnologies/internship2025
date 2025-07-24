@@ -721,7 +721,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
             uint32_t start;
             queue_pop(&recordings, &start);
             htim->Instance->ARR = start - htim9.Instance->CNT;
-            HAL_GPIO_WritePin(Toggle_GPIO_Port, Toggle_Pin, GPIO_PIN_SET);
+//            HAL_GPIO_WritePin(Toggle_GPIO_Port, Toggle_Pin, GPIO_PIN_SET);
         }
         else
         {
@@ -750,9 +750,10 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
             // The time we keep the led on is the entire combined interval plus a second.
             htim->Instance->ARR = current + get_option(BUTTON_INTERVAL_KEEP_LED_ON_TIME) - start;
-            HAL_GPIO_WritePin(Toggle_GPIO_Port, Toggle_Pin, GPIO_PIN_RESET);
+//            HAL_GPIO_WritePin(Toggle_GPIO_Port, Toggle_Pin, GPIO_PIN_RESET);
         }
 
+        HAL_GPIO_TogglePin(Toggle_GPIO_Port, Toggle_Pin);
         led_on = !led_on;
     }
 }
