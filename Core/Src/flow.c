@@ -84,6 +84,7 @@ void init_option(state_t s)
  * @brief Set the state to waiting and deinitialize the previous option if necessary.
  * @retval None
  */
+#include "stdio.h"
 void deinit_options(void)
 {
     // Stop option.
@@ -122,9 +123,9 @@ void deinit_options(void)
         {
             reset_recordings();
             HAL_CHECK(HAL_TIM_Base_Stop_IT(&htim9));
-            if (HAL_TIM_Base_GetState(&htim6) != HAL_TIM_STATE_READY) {
-                HAL_CHECK(HAL_TIM_Base_Stop_IT(&htim6));
-            }
+
+            // We might be in the recording phase so TIM6 might not have started yet.
+            HAL_TIM_Base_Stop_IT(&htim6);
         }
             break;
         default:
