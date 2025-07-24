@@ -98,13 +98,15 @@ int main(void)
     MX_TIM2_Init();
     MX_TIM1_Init();
     MX_TIM3_Init();
+    MX_TIM9_Init();
+    MX_TIM6_Init();
     /* USER CODE BEGIN 2 */
 
     /* USER CODE END 2 */
 
     /* Infinite loop */
     /* USER CODE BEGIN WHILE */
-    uint8_t current_command;
+    uint32_t current_command;
     while (1)
     {
         /* USER CODE END WHILE */
@@ -114,20 +116,20 @@ int main(void)
         {
             if (get_state() == WAITING_OPTION)
             {
-                uint8_t num = current_command - '0';
-                if (num >= 1 && num <= 5)
+                uint8_t num = (uint8_t) current_command - '0';
+                if (num >= 1 && num <= 6)
                 {
-                    printf("Received option: %c\n", current_command);
+                    printf("Received option: %c\n", (uint8_t) current_command);
                     set_state(num);
                 }
                 else
                 {
-                    printf("Unknown option: %c\n", current_command);
+                    printf("Unknown option: %c\n", (uint8_t) current_command);
                 }
             }
             else
             {
-                if (current_command == 'q')
+                if ((uint8_t) current_command == 'q')
                 {
                     printf("Quit option\n");
                     set_state(WAITING_OPTION);

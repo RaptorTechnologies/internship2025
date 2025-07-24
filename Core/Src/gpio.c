@@ -58,8 +58,8 @@ void MX_GPIO_Init(void)
     /*Configure GPIO pin : Toggle_Pin */
     GPIO_InitStruct.Pin = Toggle_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
     HAL_GPIO_Init(Toggle_GPIO_Port, &GPIO_InitStruct);
 
     /*Configure GPIO pin : Error_Pin */
@@ -82,9 +82,9 @@ void HAL_GPIO_EXTI_Callback(uint16_t pin)
     // the pin is the right one and we haven't started
     // debouncing a previour press, we can start debouncing
     // the current press.
-    if ((get_state() == PUSHBUTTON_TOGGLE) &&
-        (pin == Button_Pin) &&
-        (HAL_TIM_Base_GetState(&htim5) != HAL_TIM_STATE_BUSY))
+    if ((get_state() == PUSHBUTTON_TOGGLE || get_state() == BUTTON_INTERVAL) && (pin
+            == Button_Pin)
+        && (HAL_TIM_Base_GetState(&htim5) != HAL_TIM_STATE_BUSY))
     {
         if (HAL_TIM_Base_Start_IT(&htim5) != HAL_OK)
         {

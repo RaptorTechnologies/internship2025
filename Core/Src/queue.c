@@ -17,11 +17,32 @@ void queue_init(queue_t *q)
     memset(q, 0, sizeof(*q));
 }
 
+bool queue_empty(queue_t *q)
+{
+    return q->top == q->bottom;
+}
+
+bool queue_peek(queue_t *q, uint32_t *elem)
+{
+    if (q->top == q->bottom)
+    {
+        return false;
+    }
+
+    *elem = q->queue[q->bottom];
+    return true;
+}
+
+void queue_clear(queue_t *q)
+{
+    q->top = q->bottom = 0;
+}
+
 /**
  * @brief  This function pushes elem into the queue. If queue is full, it overwrites the oldest element.
  * @retval None
  */
-void queue_push_overwrite(queue_t *q, uint8_t elem)
+void queue_push_overwrite(queue_t *q, uint32_t elem)
 {
     if (((q->top + 1) % QUEUE_SIZE) == q->bottom)
     {
@@ -36,7 +57,7 @@ void queue_push_overwrite(queue_t *q, uint8_t elem)
  * @brief  This function tries to pop an element from the queue.
  * @retval True if succeeded, false if queue is empty.
  */
-bool queue_pop(queue_t *q, uint8_t *elem)
+bool queue_pop(queue_t *q, uint32_t *elem)
 {
     if (q->top == q->bottom)
     {
