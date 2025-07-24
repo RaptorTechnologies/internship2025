@@ -42,12 +42,21 @@ void MX_GPIO_Init(void)
 
     /* GPIO Ports Clock Enable */
     __HAL_RCC_GPIOC_CLK_ENABLE();
-    __HAL_RCC_GPIOA_CLK_ENABLE();
     __HAL_RCC_GPIOG_CLK_ENABLE();
+    __HAL_RCC_GPIOA_CLK_ENABLE();
     __HAL_RCC_GPIOF_CLK_ENABLE();
 
     /*Configure GPIO pin Output Level */
-    HAL_GPIO_WritePin(GPIOG, Toggle_Pin | Error_Pin, GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(GPIOG,
+            Toggle4_Pin | Toggle3_Pin | Toggle2_Pin | Toggle1_Pin,
+            GPIO_PIN_RESET);
+
+    /*Configure GPIO pins : Toggle4_Pin Toggle3_Pin */
+    GPIO_InitStruct.Pin = Toggle4_Pin | Toggle3_Pin;
+    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+    HAL_GPIO_Init(GPIOG, &GPIO_InitStruct);
 
     /*Configure GPIO pin : Button_Pin */
     GPIO_InitStruct.Pin = Button_Pin;
@@ -55,19 +64,19 @@ void MX_GPIO_Init(void)
     GPIO_InitStruct.Pull = GPIO_PULLUP;
     HAL_GPIO_Init(Button_GPIO_Port, &GPIO_InitStruct);
 
-    /*Configure GPIO pin : Toggle_Pin */
-    GPIO_InitStruct.Pin = Toggle_Pin;
+    /*Configure GPIO pin : Toggle2_Pin */
+    GPIO_InitStruct.Pin = Toggle2_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
     GPIO_InitStruct.Pull = GPIO_PULLDOWN;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-    HAL_GPIO_Init(Toggle_GPIO_Port, &GPIO_InitStruct);
+    HAL_GPIO_Init(Toggle2_GPIO_Port, &GPIO_InitStruct);
 
-    /*Configure GPIO pin : Error_Pin */
-    GPIO_InitStruct.Pin = Error_Pin;
+    /*Configure GPIO pin : Toggle1_Pin */
+    GPIO_InitStruct.Pin = Toggle1_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
     GPIO_InitStruct.Pull = GPIO_PULLDOWN;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-    HAL_GPIO_Init(Error_GPIO_Port, &GPIO_InitStruct);
+    HAL_GPIO_Init(Toggle1_GPIO_Port, &GPIO_InitStruct);
 
     /* EXTI interrupt init*/
     HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
@@ -82,7 +91,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t pin)
     // the pin is the right one and we haven't started
     // debouncing a previour press, we can start debouncing
     // the current press.
-    if ((get_state() == PUSHBUTTON_TOGGLE || get_state() == BUTTON_INTERVAL) &&
+    if ((is_state_on(PUSHBUTTON_TOGGLE) || is_state_on(BUTTON_INTERVAL)) &&
         (pin == Button_Pin) &&
         (HAL_TIM_Base_GetState(&htim5) != HAL_TIM_STATE_BUSY))
     {

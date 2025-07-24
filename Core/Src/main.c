@@ -114,47 +114,44 @@ int main(void)
         /* USER CODE BEGIN 3 */
         if (command_queue_pop(&current_command))
         {
-            if (get_state() == WAITING_OPTION)
+            uint8_t num = current_command - '0';
+            if (num >= 1 && num <= 6)
             {
-                uint8_t num = (uint8_t) current_command - '0';
-                if (num >= 1 && num <= 6)
+                state_t task = 1 << (num - 1);
+                if ((task == BUTTON_INTERVAL) && !is_state_on(BUTTON_INTERVAL))
                 {
-                    printf("Received option: %c\n", (uint8_t) current_command);
-                    if (num == BUTTON_INTERVAL)
+                    uint32_t time;
+                    stop_receiving();
+                    printf("Recording time: ");
+                    fflush(stdout);
+                    time = read_int();
+                    if (time != 0)
                     {
-                        uint32_t time;
-                        stop_receiving();
-                        printf("Recording time: ");
-                        fflush(stdout);
-                        time = read_int();
-                        if (time != 0)
-                        {
-                            set_option(BUTTON_INTERVAL_RECORDING_TIME, time);
-                        }
-                        printf("\nLed on time: ");
-                        fflush(stdout);
-                        time = read_int();
-                        if (time != 0)
-                        {
-                            set_option(BUTTON_INTERVAL_KEEP_LED_ON_TIME, time);
-                        }
-                        printf("\n");
-                        start_receiving();
+                        set_option(BUTTON_INTERVAL_RECORDING_TIME, time);
                     }
-                    set_state(num);
+                    printf("\nLed on time: ");
+                    fflush(stdout);
+                    time = read_int();
+                    if (time != 0)
+                    {
+                        set_option(BUTTON_INTERVAL_KEEP_LED_ON_TIME, time);
+                    }
+                    printf("\n");
+                    start_receiving();
+                }
+                toggle_state(task);
+                if (is_state_on(task))
+                {
+                    printf("Started option: %c\n", (uint8_t) current_command);
                 }
                 else
                 {
-                    printf("Unknown option: %c\n", (uint8_t) current_command);
+                    printf("Stopped option: %c\n", (uint8_t) current_command);
                 }
             }
             else
             {
-                if ((uint8_t) current_command == 'q')
-                {
-                    printf("Quit option\n");
-                    set_state(WAITING_OPTION);
-                }
+                printf("Unknown option: %c\n", (uint8_t) current_command);
             }
         }
     }
@@ -217,7 +214,7 @@ void Error_Handler(void)
     __disable_irq();
     while (1)
     {
-        HAL_GPIO_TogglePin(Error_GPIO_Port, Error_Pin);
+        HAL_GPIO_TogglePin(Toggle1_GPIO_Port, Toggle1_Pin);
         for (uint32_t i = 0; i < 100000; ++i);
     }
     /* USER CODE END Error_Handler_Debug */
