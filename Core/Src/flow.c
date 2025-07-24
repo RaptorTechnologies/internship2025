@@ -16,8 +16,10 @@
 
 static state_t state = WAITING_OPTION;
 
-static uint32_t task_options[2] = { [BUTTON_INTERVAL_RECORDING_TIME] = 10000,
-                                    [BUTTON_INTERVAL_KEEP_LED_ON_TIME] = 1000, };
+static uint32_t task_options[2] = {
+    [BUTTON_INTERVAL_RECORDING_TIME] = 10000,
+    [BUTTON_INTERVAL_KEEP_LED_ON_TIME] = 1000
+};
 
 void set_option(option_t opt, uint32_t value)
 {
