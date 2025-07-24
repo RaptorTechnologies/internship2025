@@ -737,7 +737,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
             // distance between the latest one and the new one is less than 1 second.
             while (queue_peek(&recordings, &next))
             {
-                if (next - current <= 1000)
+                if (next - current <= get_option(BUTTON_INTERVAL_KEEP_LED_ON_TIME))
                 {
                     current = next;
                 }
