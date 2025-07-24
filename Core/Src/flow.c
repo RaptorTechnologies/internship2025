@@ -16,6 +16,19 @@
 
 static state_t state = WAITING_OPTION;
 
+static uint32_t task_options[2] = {
+   [BUTTON_INTERVAL_RECORDING_TIME] = 10000,
+   [BUTTON_INTERVAL_KEEP_LED_ON_TIME] = 1000,
+};
+
+void set_option(option_t opt, uint32_t value) {
+    task_options[opt] = value;
+}
+
+uint32_t get_option(option_t opt) {
+    return task_options[opt];
+}
+
 /**
  * @brief Set the new option to run and initialize it if necessary. If the current state isn't WAITING_OPTION, it stops the current option.
  * @retval None
@@ -58,7 +71,7 @@ void init_option(state_t s)
             break;
         case BUTTON_INTERVAL:
         {
-            htim9.Instance->ARR = 10000;
+            htim9.Instance->ARR = get_option(BUTTON_INTERVAL_RECORDING_TIME);
             HAL_CHECK(HAL_TIM_Base_Start_IT(&htim9));
         }
             break;
@@ -109,6 +122,9 @@ void deinit_options(void)
         {
             reset_recordings();
             HAL_CHECK(HAL_TIM_Base_Stop_IT(&htim9));
+            if (HAL_TIM_Base_GetState(&htim6) != HAL_TIM_STATE_READY) {
+                HAL_CHECK(HAL_TIM_Base_Stop_IT(&htim6));
+            }
         }
             break;
         default:

@@ -120,6 +120,28 @@ int main(void)
                 if (num >= 1 && num <= 6)
                 {
                     printf("Received option: %c\n", (uint8_t) current_command);
+                    if (num == BUTTON_INTERVAL)
+                    {
+                        uint32_t time;
+                        stop_receiving();
+                        printf("Recording time: ");
+                        fflush(stdout);
+                        time = read_int();
+                        if (time != 0)
+                        {
+                            set_option(BUTTON_INTERVAL_RECORDING_TIME, time);
+                        }
+                        printf("%ld", time);
+                        printf("\nLed on time: ");
+                        fflush(stdout);
+                        time = read_int();
+                        if (time != 0)
+                        {
+                            set_option(BUTTON_INTERVAL_KEEP_LED_ON_TIME, time);
+                        }
+                        printf("%ld\n", time);
+                        start_receiving();
+                    }
                     set_state(num);
                 }
                 else

@@ -42,6 +42,9 @@ void MX_UART4_Init(void);
 
 /* USER CODE BEGIN Prototypes */
 bool command_queue_pop(uint32_t *s);
+void start_receiving(void);
+void stop_receiving(void);
+int read_int(void);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

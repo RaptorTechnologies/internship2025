@@ -9,6 +9,7 @@
 #define INC_FLOW_H_
 
 #include <stdbool.h>
+#include <stdint.h>
 
 typedef enum
 {
@@ -20,6 +21,13 @@ typedef enum
     ADC_LED_TOGGLE_PWM = 5,
     BUTTON_INTERVAL = 6,
 } state_t;
+
+typedef enum
+{
+    BUTTON_INTERVAL_RECORDING_TIME, BUTTON_INTERVAL_KEEP_LED_ON_TIME,
+} option_t;
+void set_option(option_t opt, uint32_t value);
+uint32_t get_option(option_t opt);
 
 void set_state(state_t s);
 state_t get_state(void);
