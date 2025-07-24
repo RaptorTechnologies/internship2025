@@ -141,6 +141,17 @@ void stop_receiving(void) {
     HAL_UART_AbortReceive_IT(&huart4);
 }
 
+// Receive one char in blocking mode and echo it back to the same uart.
+// UART must not be currently receiving anything asynchronously
+uint8_t get_char_with_echo(void) {
+    uint8_t ch;
+    HAL_UART_Receive(&huart4, &ch, 1, 0xFFFF);
+    HAL_UART_Transmit(&huart4, &ch, 1, 0xFFFF);
+    return ch;
+}
+
+// Read an integer in blocking mode. This can be called if UART is currently
+// receiving with interrupts.
 int read_int(void) {
     bool had_to_stop = false;
     if (HAL_UART_GetState(&huart4) == HAL_UART_STATE_BUSY_RX) {
@@ -150,10 +161,10 @@ int read_int(void) {
 
     uint8_t ch;
     uint32_t num = 0;
-    HAL_UART_Receive(&huart4, &ch, 1, 0xFFFF);
+    ch = get_char_with_echo();
     while (isdigit(ch)) {
         num = num * 10 + (ch - '0');
-        HAL_UART_Receive(&huart4, &ch, 1, 0xFFFF);
+        ch = get_char_with_echo();
     }
 
     if (had_to_stop) {

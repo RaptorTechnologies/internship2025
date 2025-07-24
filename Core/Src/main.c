@@ -131,7 +131,6 @@ int main(void)
                         {
                             set_option(BUTTON_INTERVAL_RECORDING_TIME, time);
                         }
-                        printf("%ld", time);
                         printf("\nLed on time: ");
                         fflush(stdout);
                         time = read_int();
@@ -139,7 +138,7 @@ int main(void)
                         {
                             set_option(BUTTON_INTERVAL_KEEP_LED_ON_TIME, time);
                         }
-                        printf("%ld\n", time);
+                        printf("\n");
                         start_receiving();
                     }
                     set_state(num);
