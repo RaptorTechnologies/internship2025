@@ -21,6 +21,7 @@
 #include "usart.h"
 
 /* USER CODE BEGIN 0 */
+#include <ctype.h>
 queue_t command_queue = { 0 };
 
 volatile uint8_t char_rx;
@@ -126,12 +127,60 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef *uartHandle)
 
 /* USER CODE BEGIN 1 */
 
-// printf uses this function to write its output character by character
-bool command_queue_pop(uint8_t *s)
+bool command_queue_pop(uint32_t *s)
 {
     return queue_pop(&command_queue, s);
 }
 
+void start_receiving(void)
+{
+    HAL_UART_Receive_IT(&huart4, (uint8_t*) &char_rx, 1);
+}
+
+void stop_receiving(void)
+{
+    HAL_UART_AbortReceive_IT(&huart4);
+}
+
+// Receive one char in blocking mode and echo it back to the same uart.
+// UART must not be currently receiving anything asynchronously
+uint8_t get_char_with_echo(void)
+{
+    uint8_t ch;
+    HAL_UART_Receive(&huart4, &ch, 1, 0xFFFF);
+    HAL_UART_Transmit(&huart4, &ch, 1, 0xFFFF);
+    return ch;
+}
+
+// Read an integer in blocking mode. This can be called if UART is currently
+// receiving with interrupts.
+int read_int(void)
+{
+    bool had_to_stop = false;
+    if (HAL_UART_GetState(&huart4) == HAL_UART_STATE_BUSY_RX)
+    {
+        stop_receiving();
+        had_to_stop = true;
+    }
+
+    uint8_t ch;
+    uint32_t num = 0;
+    ch = get_char_with_echo();
+    while (isdigit(ch))
+    {
+        num = num * 10 + (ch - '0');
+        ch = get_char_with_echo();
+    }
+
+    if (had_to_stop)
+    {
+        start_receiving();
+    }
+
+    return num;
+}
+
+// printf uses this function to write its output character by character
 PUTCHAR_PROTOTYPE
 {
     // Transmit the character to UART4 in blocking mode with the max timeout.

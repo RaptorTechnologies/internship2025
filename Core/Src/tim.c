@@ -22,6 +22,7 @@
 
 /* USER CODE BEGIN 0 */
 #include "flow.h"
+#include "queue.h"
 /* USER CODE END 0 */
 
 TIM_HandleTypeDef htim1;
@@ -614,21 +615,44 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef *tim_baseHandle)
 }
 
 /* USER CODE BEGIN 1 */
+static queue_t recordings = { 0 };
+static bool finished_recording = false;
+static bool led_on = false;
+static uint32_t repeat_queue;
+
+void reset_recordings(void)
+{
+    queue_clear(&recordings);
+    finished_recording = false;
+    led_on = false;
+}
+
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
     // Select TIM5 for debouncing and make sure the button is in the same state
     // as it was when the EXTI interrupt was first triggered.
     // This is checked after 10ms after the first press.
-    if (htim->Instance == TIM5 && HAL_GPIO_ReadPin(Button_GPIO_Port, Button_Pin)
-            == GPIO_PIN_RESET)
+    if (htim->Instance == TIM5 &&
+        HAL_GPIO_ReadPin(Button_GPIO_Port, Button_Pin) == GPIO_PIN_RESET)
     {
-        // If the button is stable, we toggle the led.
-        HAL_GPIO_TogglePin(Toggle1_GPIO_Port, Toggle1_Pin);
-
         // Stop the timer.
         if (HAL_TIM_Base_Stop_IT(&htim5) != HAL_OK)
         {
             Error_Handler();
+        }
+
+        if (is_state_on(PUSHBUTTON_TOGGLE))
+        {
+            // If the button is stable, we toggle the led.
+            HAL_GPIO_TogglePin(Toggle1_GPIO_Port, Toggle1_Pin);
+        }
+
+        if (is_state_on(BUTTON_INTERVAL))
+        {
+            if (!finished_recording)
+            {
+                queue_push_overwrite(&recordings, htim9.Instance->CNT - 10);
+            }
         }
     }
 
@@ -642,6 +666,94 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     if (is_state_on(ADC_LED_TOGGLE) && (htim->Instance == TIM2))
     {
         HAL_GPIO_TogglePin(Toggle3_GPIO_Port, Toggle3_Pin);
+    }
+
+    // Button iterval time keeper interrupt.
+    // If we just finished the initial recording, we initialize all variables and start the first event for TIM6.
+    if (is_state_on(BUTTON_INTERVAL) && (htim->Instance == TIM9))
+    {
+        if (finished_recording == false)
+        {
+            HAL_GPIO_WritePin(Toggle4_GPIO_Port, Toggle4_Pin, GPIO_PIN_SET);
+            led_on = false;
+            finished_recording = true;
+            queue_push_overwrite(&recordings, 10000);
+
+            // We save the bottom of the queue to be able to replay the queue as many times as we want.
+            // This is non-zero only when the recordings didn't fit the queue.
+            repeat_queue = recordings.bottom;
+        }
+        else
+        {
+            HAL_GPIO_WritePin(Toggle4_GPIO_Port, Toggle4_Pin, GPIO_PIN_SET);
+            led_on = false;
+            recordings.bottom = repeat_queue;
+            if (HAL_TIM_Base_Stop_IT(&htim6) != HAL_OK)
+            {
+                Error_Handler();
+            }
+        }
+
+        // Load the initial time we want to turn the led on at.
+        uint32_t next;
+        queue_pop(&recordings, &next);
+        htim6.Instance->CNT = 0;
+        htim6.Instance->ARR = next - htim9.Instance->CNT;
+        if (HAL_TIM_Base_Start_IT(&htim6) != HAL_OK)
+        {
+            Error_Handler();
+        }
+    }
+
+    // Here we toggle the led and set the interval for the next toggle using our time keep.
+    if (is_state_on(BUTTON_INTERVAL) && (htim->Instance == TIM6))
+    {
+        // If there are no more recordings, exit so that we don't have to check the return of queue_pop later
+        if (queue_empty(&recordings))
+        {
+            HAL_TIM_Base_Stop_IT(&htim6);
+            return;
+        }
+
+        // If led is on, we have to calculate the next time we turn it on, that means at the next entry in recordings.
+        // We use TIM9 as a time keeper.
+        if (led_on)
+        {
+            uint32_t start;
+            queue_pop(&recordings, &start);
+            htim->Instance->ARR = start - htim9.Instance->CNT;
+        }
+        else
+        {
+            // If the led is off, we turn it on and calculate how long it should stay on.
+            uint32_t start;
+            uint32_t current;
+            uint32_t next;
+
+            start = htim9.Instance->CNT;
+            current = start;
+
+            // As long as we still have entries, combine them as long as the
+            // distance between the latest one and the new one is less than 1 second.
+            while (queue_peek(&recordings, &next))
+            {
+                if (next - current <= get_option(BUTTON_INTERVAL_KEEP_LED_ON_TIME))
+                {
+                    current = next;
+                }
+                else
+                {
+                    break;
+                }
+                queue_pop(&recordings, &next);
+            }
+
+            // The time we keep the led on is the entire combined interval plus a second.
+            htim->Instance->ARR = current + get_option(BUTTON_INTERVAL_KEEP_LED_ON_TIME) - start;
+        }
+
+        HAL_GPIO_TogglePin(Toggle4_GPIO_Port, Toggle4_Pin);
+        led_on = !led_on;
     }
 }
 /* USER CODE END 1 */

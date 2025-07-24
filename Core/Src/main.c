@@ -106,7 +106,7 @@ int main(void)
 
     /* Infinite loop */
     /* USER CODE BEGIN WHILE */
-    uint8_t current_command;
+    uint32_t current_command;
     while (1)
     {
         /* USER CODE END WHILE */
@@ -115,23 +115,43 @@ int main(void)
         if (command_queue_pop(&current_command))
         {
             uint8_t num = current_command - '0';
-            if (num >= 1 && num <= 5)
+            if (num >= 1 && num <= 6)
             {
                 state_t task = 1 << (num - 1);
+                if ((task == BUTTON_INTERVAL) && !is_state_on(BUTTON_INTERVAL))
+                {
+                    uint32_t time;
+                    stop_receiving();
+                    printf("Recording time: ");
+                    fflush(stdout);
+                    time = read_int();
+                    if (time != 0)
+                    {
+                        set_option(BUTTON_INTERVAL_RECORDING_TIME, time);
+                    }
+                    printf("\nLed on time: ");
+                    fflush(stdout);
+                    time = read_int();
+                    if (time != 0)
+                    {
+                        set_option(BUTTON_INTERVAL_KEEP_LED_ON_TIME, time);
+                    }
+                    printf("\n");
+                    start_receiving();
+                }
                 toggle_state(task);
                 if (is_state_on(task))
                 {
-                    printf("Started option: %c\n", current_command);
+                    printf("Started option: %c\n", (uint8_t) current_command);
                 }
                 else
                 {
-                    printf("Stopped option: %c\n", current_command);
+                    printf("Stopped option: %c\n", (uint8_t) current_command);
                 }
-                printf("%d\n", task);
             }
             else
             {
-                printf("Unknown option: %c\n", current_command);
+                printf("Unknown option: %c\n", (uint8_t) current_command);
             }
         }
     }
