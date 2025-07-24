@@ -98,6 +98,8 @@ int main(void)
     MX_TIM2_Init();
     MX_TIM1_Init();
     MX_TIM3_Init();
+    MX_TIM9_Init();
+    MX_TIM6_Init();
     /* USER CODE BEGIN 2 */
 
     /* USER CODE END 2 */
@@ -112,26 +114,24 @@ int main(void)
         /* USER CODE BEGIN 3 */
         if (command_queue_pop(&current_command))
         {
-            if (get_state() == WAITING_OPTION)
+            uint8_t num = current_command - '0';
+            if (num >= 1 && num <= 5)
             {
-                uint8_t num = current_command - '0';
-                if (num >= 1 && num <= 5)
+                state_t task = 1 << (num - 1);
+                toggle_state(task);
+                if (is_state_on(task))
                 {
-                    printf("Received option: %c\n", current_command);
-                    set_state(num);
+                    printf("Started option: %c\n", current_command);
                 }
                 else
                 {
-                    printf("Unknown option: %c\n", current_command);
+                    printf("Stopped option: %c\n", current_command);
                 }
+                printf("%d\n", task);
             }
             else
             {
-                if (current_command == 'q')
-                {
-                    printf("Quit option\n");
-                    set_state(WAITING_OPTION);
-                }
+                printf("Unknown option: %c\n", current_command);
             }
         }
     }
@@ -194,7 +194,7 @@ void Error_Handler(void)
     __disable_irq();
     while (1)
     {
-        HAL_GPIO_TogglePin(Error_GPIO_Port, Error_Pin);
+        HAL_GPIO_TogglePin(Toggle1_GPIO_Port, Toggle1_Pin);
         for (uint32_t i = 0; i < 100000; ++i);
     }
     /* USER CODE END Error_Handler_Debug */

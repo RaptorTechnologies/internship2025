@@ -127,7 +127,8 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef *uartHandle)
 /* USER CODE BEGIN 1 */
 
 // printf uses this function to write its output character by character
-bool command_queue_pop(uint8_t *s) {
+bool command_queue_pop(uint8_t *s)
+{
     return queue_pop(&command_queue, s);
 }
 

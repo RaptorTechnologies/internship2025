@@ -15,13 +15,13 @@ typedef enum
     WAITING_OPTION = 0,
     PUSHBUTTON_TOGGLE = 1,
     TIMER_TOGGLE = 2,
-    ADC_READING = 3,
-    ADC_LED_TOGGLE = 4,
-    ADC_LED_TOGGLE_PWM = 5
+    ADC_READING = 4,
+    ADC_LED_TOGGLE = 8,
+    ADC_LED_TOGGLE_PWM = 16
 } state_t;
 
-void set_state(state_t s);
-state_t get_state(void);
+void toggle_state(state_t s);
+bool is_state_on(state_t s);
 void deinit_options(void);
 void init_option(state_t s);
 

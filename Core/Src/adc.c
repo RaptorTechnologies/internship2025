@@ -138,13 +138,14 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
     if (hadc->Instance == ADC3)
     {
         uint32_t potentiometer_value = HAL_ADC_GetValue(hadc);
-        if (get_state() == ADC_LED_TOGGLE)
+        if (is_state_on(ADC_LED_TOGGLE))
         {
             // Set the timer to a value between TIMER_MIN and TIMER_MAX ms
             // From the ADC we get values between 0 and 0xFFF (12 bit precision)
             // We normalize it by dividing with 0xFFF, then scale it to (TIMER_MAX - TIMER_MIN) and add TIMER_MIN
-            htim2.Instance->ARR =
-                    TIMER_MAX - (potentiometer_value * (TIMER_MAX - TIMER_MIN)) / 0x0FFF + TIMER_MIN;
+            htim2.Instance->ARR = TIMER_MAX
+                    - (potentiometer_value * (TIMER_MAX - TIMER_MIN)) / 0x0FFF
+                                  + TIMER_MIN;
 
             // If the timer is above our newly set value, we restart the count.
             if (htim2.Instance->CNT > htim2.Instance->ARR)
@@ -152,7 +153,8 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
                 htim2.Instance->CNT = 0;
             }
         }
-        else if (get_state() == ADC_LED_TOGGLE_PWM)
+
+        if (is_state_on(ADC_LED_TOGGLE_PWM))
         {
             htim3.Instance->CCR3 = potentiometer_value;
         }
