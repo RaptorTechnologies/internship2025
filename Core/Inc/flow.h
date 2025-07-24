@@ -17,7 +17,8 @@ typedef enum
     TIMER_TOGGLE = 2,
     ADC_READING = 3,
     ADC_LED_TOGGLE = 4,
-    ADC_LED_TOGGLE_PWM = 5
+    ADC_LED_TOGGLE_PWM = 5,
+    BUTTON_INTERVAL = 6,
 } state_t;
 
 void set_state(state_t s);
