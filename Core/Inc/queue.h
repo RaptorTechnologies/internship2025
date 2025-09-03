@@ -8,8 +8,8 @@
 #ifndef INC_QUEUE_H_
 #define INC_QUEUE_H_
 
-#include <stdint.h>
 #include <stdbool.h>
+#include <stdint.h>
 
 #define QUEUE_SIZE 128
 // Circular queue

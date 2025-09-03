@@ -41,16 +41,16 @@ void MX_TIM1_Init(void)
 
     /* USER CODE END TIM1_Init 0 */
 
-    TIM_ClockConfigTypeDef sClockSourceConfig = { 0 };
-    TIM_MasterConfigTypeDef sMasterConfig = { 0 };
-    TIM_OC_InitTypeDef sConfigOC = { 0 };
-    TIM_BreakDeadTimeConfigTypeDef sBreakDeadTimeConfig = { 0 };
+    TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+    TIM_MasterConfigTypeDef sMasterConfig = {0};
+    TIM_OC_InitTypeDef sConfigOC = {0};
+    TIM_BreakDeadTimeConfigTypeDef sBreakDeadTimeConfig = {0};
 
     /* USER CODE BEGIN TIM1_Init 1 */
 
     /* USER CODE END TIM1_Init 1 */
     htim1.Instance = TIM1;
-    htim1.Init.Prescaler = 16000;
+    htim1.Init.Prescaler = 45000;
     htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
     htim1.Init.Period = 5;
     htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -101,7 +101,6 @@ void MX_TIM1_Init(void)
 
     /* USER CODE END TIM1_Init 2 */
     HAL_TIM_MspPostInit(&htim1);
-
 }
 /* TIM2 init function */
 void MX_TIM2_Init(void)
@@ -111,14 +110,14 @@ void MX_TIM2_Init(void)
 
     /* USER CODE END TIM2_Init 0 */
 
-    TIM_ClockConfigTypeDef sClockSourceConfig = { 0 };
-    TIM_MasterConfigTypeDef sMasterConfig = { 0 };
+    TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+    TIM_MasterConfigTypeDef sMasterConfig = {0};
 
     /* USER CODE BEGIN TIM2_Init 1 */
 
     /* USER CODE END TIM2_Init 1 */
     htim2.Instance = TIM2;
-    htim2.Init.Prescaler = 16000;
+    htim2.Init.Prescaler = 45000;
     htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
     htim2.Init.Period = 10;
     htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -141,7 +140,6 @@ void MX_TIM2_Init(void)
     /* USER CODE BEGIN TIM2_Init 2 */
 
     /* USER CODE END TIM2_Init 2 */
-
 }
 /* TIM3 init function */
 void MX_TIM3_Init(void)
@@ -151,9 +149,9 @@ void MX_TIM3_Init(void)
 
     /* USER CODE END TIM3_Init 0 */
 
-    TIM_ClockConfigTypeDef sClockSourceConfig = { 0 };
-    TIM_MasterConfigTypeDef sMasterConfig = { 0 };
-    TIM_OC_InitTypeDef sConfigOC = { 0 };
+    TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+    TIM_MasterConfigTypeDef sMasterConfig = {0};
+    TIM_OC_InitTypeDef sConfigOC = {0};
 
     /* USER CODE BEGIN TIM3_Init 1 */
 
@@ -195,7 +193,6 @@ void MX_TIM3_Init(void)
 
     /* USER CODE END TIM3_Init 2 */
     HAL_TIM_MspPostInit(&htim3);
-
 }
 /* TIM4 init function */
 void MX_TIM4_Init(void)
@@ -205,14 +202,14 @@ void MX_TIM4_Init(void)
 
     /* USER CODE END TIM4_Init 0 */
 
-    TIM_ClockConfigTypeDef sClockSourceConfig = { 0 };
-    TIM_MasterConfigTypeDef sMasterConfig = { 0 };
+    TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+    TIM_MasterConfigTypeDef sMasterConfig = {0};
 
     /* USER CODE BEGIN TIM4_Init 1 */
 
     /* USER CODE END TIM4_Init 1 */
     htim4.Instance = TIM4;
-    htim4.Init.Prescaler = 16000;
+    htim4.Init.Prescaler = 45000;
     htim4.Init.CounterMode = TIM_COUNTERMODE_UP;
     htim4.Init.Period = 1000;
     htim4.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -235,7 +232,6 @@ void MX_TIM4_Init(void)
     /* USER CODE BEGIN TIM4_Init 2 */
 
     /* USER CODE END TIM4_Init 2 */
-
 }
 /* TIM5 init function */
 void MX_TIM5_Init(void)
@@ -245,14 +241,14 @@ void MX_TIM5_Init(void)
 
     /* USER CODE END TIM5_Init 0 */
 
-    TIM_ClockConfigTypeDef sClockSourceConfig = { 0 };
-    TIM_MasterConfigTypeDef sMasterConfig = { 0 };
+    TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+    TIM_MasterConfigTypeDef sMasterConfig = {0};
 
     /* USER CODE BEGIN TIM5_Init 1 */
 
     /* USER CODE END TIM5_Init 1 */
     htim5.Instance = TIM5;
-    htim5.Init.Prescaler = 16000;
+    htim5.Init.Prescaler = 45000;
     htim5.Init.CounterMode = TIM_COUNTERMODE_UP;
     htim5.Init.Period = 10;
     htim5.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -275,7 +271,6 @@ void MX_TIM5_Init(void)
     /* USER CODE BEGIN TIM5_Init 2 */
 
     /* USER CODE END TIM5_Init 2 */
-
 }
 /* TIM6 init function */
 void MX_TIM6_Init(void)
@@ -285,13 +280,13 @@ void MX_TIM6_Init(void)
 
     /* USER CODE END TIM6_Init 0 */
 
-    TIM_MasterConfigTypeDef sMasterConfig = { 0 };
+    TIM_MasterConfigTypeDef sMasterConfig = {0};
 
     /* USER CODE BEGIN TIM6_Init 1 */
 
     /* USER CODE END TIM6_Init 1 */
     htim6.Instance = TIM6;
-    htim6.Init.Prescaler = 16000;
+    htim6.Init.Prescaler = 45000;
     htim6.Init.CounterMode = TIM_COUNTERMODE_UP;
     htim6.Init.Period = 10000;
     htim6.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
@@ -308,7 +303,6 @@ void MX_TIM6_Init(void)
     /* USER CODE BEGIN TIM6_Init 2 */
 
     /* USER CODE END TIM6_Init 2 */
-
 }
 /* TIM9 init function */
 void MX_TIM9_Init(void)
@@ -318,13 +312,13 @@ void MX_TIM9_Init(void)
 
     /* USER CODE END TIM9_Init 0 */
 
-    TIM_ClockConfigTypeDef sClockSourceConfig = { 0 };
+    TIM_ClockConfigTypeDef sClockSourceConfig = {0};
 
     /* USER CODE BEGIN TIM9_Init 1 */
 
     /* USER CODE END TIM9_Init 1 */
     htim9.Instance = TIM9;
-    htim9.Init.Prescaler = 16000;
+    htim9.Init.Prescaler = 45000;
     htim9.Init.CounterMode = TIM_COUNTERMODE_UP;
     htim9.Init.Period = 10000;
     htim9.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -341,7 +335,6 @@ void MX_TIM9_Init(void)
     /* USER CODE BEGIN TIM9_Init 2 */
 
     /* USER CODE END TIM9_Init 2 */
-
 }
 
 void HAL_TIM_Base_MspInit(TIM_HandleTypeDef *tim_baseHandle)
@@ -454,7 +447,7 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef *tim_baseHandle)
 void HAL_TIM_MspPostInit(TIM_HandleTypeDef *timHandle)
 {
 
-    GPIO_InitTypeDef GPIO_InitStruct = { 0 };
+    GPIO_InitTypeDef GPIO_InitStruct = {0};
     if (timHandle->Instance == TIM1)
     {
         /* USER CODE BEGIN TIM1_MspPostInit 0 */
@@ -462,8 +455,8 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef *timHandle)
         /* USER CODE END TIM1_MspPostInit 0 */
         __HAL_RCC_GPIOA_CLK_ENABLE();
         /**TIM1 GPIO Configuration
-         PA8     ------> TIM1_CH1
-         */
+        PA8     ------> TIM1_CH1
+        */
         GPIO_InitStruct.Pin = GPIO_PIN_8;
         GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
         GPIO_InitStruct.Pull = GPIO_NOPULL;
@@ -483,8 +476,8 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef *timHandle)
 
         __HAL_RCC_GPIOC_CLK_ENABLE();
         /**TIM3 GPIO Configuration
-         PC8     ------> TIM3_CH3
-         */
+        PC8     ------> TIM3_CH3
+        */
         GPIO_InitStruct.Pin = GPIO_PIN_8;
         GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
         GPIO_InitStruct.Pull = GPIO_NOPULL;
@@ -496,7 +489,6 @@ void HAL_TIM_MspPostInit(TIM_HandleTypeDef *timHandle)
 
         /* USER CODE END TIM3_MspPostInit 1 */
     }
-
 }
 
 void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef *tim_baseHandle)
@@ -513,8 +505,8 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef *tim_baseHandle)
         /* TIM1 interrupt Deinit */
         /* USER CODE BEGIN TIM1:TIM1_BRK_TIM9_IRQn disable */
         /**
-         * Uncomment the line below to disable the "TIM1_BRK_TIM9_IRQn" interrupt
-         * Be aware, disabling shared interrupt may affect other IPs
+         * Uncomment the line below to disable the "TIM1_BRK_TIM9_IRQn"
+         * interrupt Be aware, disabling shared interrupt may affect other IPs
          */
         /* HAL_NVIC_DisableIRQ(TIM1_BRK_TIM9_IRQn); */
         /* USER CODE END TIM1:TIM1_BRK_TIM9_IRQn disable */
@@ -602,8 +594,8 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef *tim_baseHandle)
         /* TIM9 interrupt Deinit */
         /* USER CODE BEGIN TIM9:TIM1_BRK_TIM9_IRQn disable */
         /**
-         * Uncomment the line below to disable the "TIM1_BRK_TIM9_IRQn" interrupt
-         * Be aware, disabling shared interrupt may affect other IPs
+         * Uncomment the line below to disable the "TIM1_BRK_TIM9_IRQn"
+         * interrupt Be aware, disabling shared interrupt may affect other IPs
          */
         /* HAL_NVIC_DisableIRQ(TIM1_BRK_TIM9_IRQn); */
         /* USER CODE END TIM9:TIM1_BRK_TIM9_IRQn disable */
@@ -615,7 +607,7 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef *tim_baseHandle)
 }
 
 /* USER CODE BEGIN 1 */
-static queue_t recordings = { 0 };
+static queue_t recordings = {0};
 static bool finished_recording = false;
 static bool led_on = false;
 static uint32_t repeat_queue;
@@ -656,20 +648,23 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
         }
     }
 
-    // If we are doing the second task and the timer is TIM4, the interval is of 1 second.
+    // If we are doing the second task and the timer is TIM4, the interval is of
+    // 1 second.
     if (is_state_on(TIMER_TOGGLE) && (htim->Instance == TIM4))
     {
         HAL_GPIO_TogglePin(Toggle2_GPIO_Port, Toggle2_Pin);
     }
 
-    // If we are doing the fourth task and the timer is TIM2, the interval is determined by the potentiometer (0 to 1000ms).
+    // If we are doing the fourth task and the timer is TIM2, the interval is
+    // determined by the potentiometer (0 to 1000ms).
     if (is_state_on(ADC_LED_TOGGLE) && (htim->Instance == TIM2))
     {
         HAL_GPIO_TogglePin(Toggle3_GPIO_Port, Toggle3_Pin);
     }
 
     // Button iterval time keeper interrupt.
-    // If we just finished the initial recording, we initialize all variables and start the first event for TIM6.
+    // If we just finished the initial recording, we initialize all variables
+    // and start the first event for TIM6.
     if (is_state_on(BUTTON_INTERVAL) && (htim->Instance == TIM9))
     {
         if (finished_recording == false)
@@ -679,8 +674,9 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
             finished_recording = true;
             queue_push_overwrite(&recordings, 10000);
 
-            // We save the bottom of the queue to be able to replay the queue as many times as we want.
-            // This is non-zero only when the recordings didn't fit the queue.
+            // We save the bottom of the queue to be able to replay the queue as
+            // many times as we want. This is non-zero only when the recordings
+            // didn't fit the queue.
             repeat_queue = recordings.bottom;
         }
         else
@@ -705,18 +701,20 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
         }
     }
 
-    // Here we toggle the led and set the interval for the next toggle using our time keep.
+    // Here we toggle the led and set the interval for the next toggle using our
+    // time keep.
     if (is_state_on(BUTTON_INTERVAL) && (htim->Instance == TIM6))
     {
-        // If there are no more recordings, exit so that we don't have to check the return of queue_pop later
+        // If there are no more recordings, exit so that we don't have to check
+        // the return of queue_pop later
         if (queue_empty(&recordings))
         {
             HAL_TIM_Base_Stop_IT(&htim6);
             return;
         }
 
-        // If led is on, we have to calculate the next time we turn it on, that means at the next entry in recordings.
-        // We use TIM9 as a time keeper.
+        // If led is on, we have to calculate the next time we turn it on, that
+        // means at the next entry in recordings. We use TIM9 as a time keeper.
         if (led_on)
         {
             uint32_t start;
@@ -725,7 +723,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
         }
         else
         {
-            // If the led is off, we turn it on and calculate how long it should stay on.
+            // If the led is off, we turn it on and calculate how long it should
+            // stay on.
             uint32_t start;
             uint32_t current;
             uint32_t next;
@@ -734,10 +733,12 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
             current = start;
 
             // As long as we still have entries, combine them as long as the
-            // distance between the latest one and the new one is less than 1 second.
+            // distance between the latest one and the new one is less than 1
+            // second.
             while (queue_peek(&recordings, &next))
             {
-                if (next - current <= get_option(BUTTON_INTERVAL_KEEP_LED_ON_TIME))
+                if (next - current <=
+                    get_option(BUTTON_INTERVAL_KEEP_LED_ON_TIME))
                 {
                     current = next;
                 }
@@ -748,8 +749,10 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
                 queue_pop(&recordings, &next);
             }
 
-            // The time we keep the led on is the entire combined interval plus a second.
-            htim->Instance->ARR = current + get_option(BUTTON_INTERVAL_KEEP_LED_ON_TIME) - start;
+            // The time we keep the led on is the entire combined interval plus
+            // a second.
+            htim->Instance->ARR =
+                current + get_option(BUTTON_INTERVAL_KEEP_LED_ON_TIME) - start;
         }
 
         HAL_GPIO_TogglePin(Toggle4_GPIO_Port, Toggle4_Pin);

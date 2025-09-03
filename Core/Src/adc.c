@@ -35,13 +35,14 @@ void MX_ADC3_Init(void)
 
     /* USER CODE END ADC3_Init 0 */
 
-    ADC_ChannelConfTypeDef sConfig = { 0 };
+    ADC_ChannelConfTypeDef sConfig = {0};
 
     /* USER CODE BEGIN ADC3_Init 1 */
 
     /* USER CODE END ADC3_Init 1 */
 
-    /** Configure the global features of the ADC (Clock, Resolution, Data Alignment and number of conversion)
+    /** Configure the global features of the ADC (Clock, Resolution, Data
+     * Alignment and number of conversion)
      */
     hadc3.Instance = ADC3;
     hadc3.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV2;
@@ -61,7 +62,8 @@ void MX_ADC3_Init(void)
         Error_Handler();
     }
 
-    /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
+    /** Configure for the selected ADC regular channel its corresponding rank in
+     * the sequencer and its sample time.
      */
     sConfig.Channel = ADC_CHANNEL_8;
     sConfig.Rank = 1;
@@ -73,13 +75,12 @@ void MX_ADC3_Init(void)
     /* USER CODE BEGIN ADC3_Init 2 */
 
     /* USER CODE END ADC3_Init 2 */
-
 }
 
 void HAL_ADC_MspInit(ADC_HandleTypeDef *adcHandle)
 {
 
-    GPIO_InitTypeDef GPIO_InitStruct = { 0 };
+    GPIO_InitTypeDef GPIO_InitStruct = {0};
     if (adcHandle->Instance == ADC3)
     {
         /* USER CODE BEGIN ADC3_MspInit 0 */
@@ -90,8 +91,8 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef *adcHandle)
 
         __HAL_RCC_GPIOF_CLK_ENABLE();
         /**ADC3 GPIO Configuration
-         PF10     ------> ADC3_IN8
-         */
+        PF10     ------> ADC3_IN8
+        */
         GPIO_InitStruct.Pin = GPIO_PIN_10;
         GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
         GPIO_InitStruct.Pull = GPIO_NOPULL;
@@ -118,8 +119,8 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef *adcHandle)
         __HAL_RCC_ADC3_CLK_DISABLE();
 
         /**ADC3 GPIO Configuration
-         PF10     ------> ADC3_IN8
-         */
+        PF10     ------> ADC3_IN8
+        */
         HAL_GPIO_DeInit(GPIOF, GPIO_PIN_10);
 
         /* ADC3 interrupt Deinit */
@@ -142,10 +143,12 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
         {
             // Set the timer to a value between TIMER_MIN and TIMER_MAX ms
             // From the ADC we get values between 0 and 0xFFF (12 bit precision)
-            // We normalize it by dividing with 0xFFF, then scale it to (TIMER_MAX - TIMER_MIN) and add TIMER_MIN
-            htim2.Instance->ARR = TIMER_MAX -
-                    (potentiometer_value * (TIMER_MAX - TIMER_MIN)) / 0x0FFF +
-                    TIMER_MIN;
+            // We normalize it by dividing with 0xFFF, then scale it to
+            // (TIMER_MAX - TIMER_MIN) and add TIMER_MIN
+            htim2.Instance->ARR =
+                TIMER_MAX -
+                (potentiometer_value * (TIMER_MAX - TIMER_MIN)) / 0x0FFF +
+                TIMER_MIN;
 
             // If the timer is above our newly set value, we restart the count.
             if (htim2.Instance->CNT > htim2.Instance->ARR)

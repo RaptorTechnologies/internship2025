@@ -1,0 +1,7 @@
+BasedOnStyle: Microsoft
+AllowShortLoopsOnASingleLine: true
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterCaseLabel: true
+AlignEscapedNewlines: DontAlign
+ColumnLimit: 80

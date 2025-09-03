@@ -39,7 +39,8 @@ void queue_clear(queue_t *q)
 }
 
 /**
- * @brief  This function pushes elem into the queue. If queue is full, it overwrites the oldest element.
+ * @brief  This function pushes elem into the queue. If queue is full, it
+ * overwrites the oldest element.
  * @retval None
  */
 void queue_push_overwrite(queue_t *q, uint32_t elem)

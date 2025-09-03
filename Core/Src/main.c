@@ -19,16 +19,21 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "adc.h"
+#include "dma.h"
+#include "gpio.h"
+#include "i2c.h"
+#include "sai.h"
 #include "tim.h"
 #include "usart.h"
-#include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "stdio.h"
-#include "queue.h"
+#include "audio_processor.h"
 #include "flow.h"
+#include "queue.h"
+#include "stdio.h"
 #include "stm32f429xx.h"
+#include "wm8994.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -54,6 +59,7 @@
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
+void PeriphCommonClock_Config(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -73,9 +79,11 @@ int main(void)
 
     /* USER CODE END 1 */
 
-    /* MCU Configuration--------------------------------------------------------*/
+    /* MCU
+     * Configuration--------------------------------------------------------*/
 
-    /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+    /* Reset of all peripherals, Initializes the Flash interface and the
+     * Systick. */
     HAL_Init();
 
     /* USER CODE BEGIN Init */
@@ -85,13 +93,16 @@ int main(void)
     /* Configure the system clock */
     SystemClock_Config();
 
+    /* Configure the peripherals common clocks */
+    PeriphCommonClock_Config();
+
     /* USER CODE BEGIN SysInit */
 
     /* USER CODE END SysInit */
 
     /* Initialize all configured peripherals */
     MX_GPIO_Init();
-    MX_UART4_Init();
+    MX_DMA_Init();
     MX_TIM5_Init();
     MX_TIM4_Init();
     MX_ADC3_Init();
@@ -100,8 +111,22 @@ int main(void)
     MX_TIM3_Init();
     MX_TIM9_Init();
     MX_TIM6_Init();
+    MX_I2C1_Init();
+    MX_SAI1_Init();
+    MX_UART4_Init();
     /* USER CODE BEGIN 2 */
+    wm8994_t w;
 
+    // We need the MCLK for codec configuration
+    SAI1_Block_B->CR1 |= (1L << 16L);
+
+    if (wm8994_init_driver(&w, &hi2c1, STM32429I_EVAL_WM8994_I2C_ADDR,
+                           &Error_Handler))
+    {
+        Error_Handler();
+    }
+
+    audio_proc_init(&hsai_BlockB1, &hsai_BlockA1);
     /* USER CODE END 2 */
 
     /* Infinite loop */
@@ -115,7 +140,7 @@ int main(void)
         if (command_queue_pop(&current_command))
         {
             uint8_t num = current_command - '0';
-            if (num >= 1 && num <= 6)
+            if (num >= 1 && num <= 7)
             {
                 state_t task = 1 << (num - 1);
                 if ((task == BUTTON_INTERVAL) && !is_state_on(BUTTON_INTERVAL))
@@ -142,18 +167,20 @@ int main(void)
                 toggle_state(task);
                 if (is_state_on(task))
                 {
-                    printf("Started option: %c\n", (uint8_t) current_command);
+                    printf("Started option: %c\n", (uint8_t)current_command);
                 }
                 else
                 {
-                    printf("Stopped option: %c\n", (uint8_t) current_command);
+                    printf("Stopped option: %c\n", (uint8_t)current_command);
                 }
             }
             else
             {
-                printf("Unknown option: %c\n", (uint8_t) current_command);
+                printf("Unknown option: %c\n", (uint8_t)current_command);
             }
         }
+
+        audio_proc_process();
     }
     /* USER CODE END 3 */
 }
@@ -164,13 +191,21 @@ int main(void)
  */
 void SystemClock_Config(void)
 {
-    RCC_OscInitTypeDef RCC_OscInitStruct = { 0 };
-    RCC_ClkInitTypeDef RCC_ClkInitStruct = { 0 };
+    RCC_OscInitTypeDef RCC_OscInitStruct = {0};
+    RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+
+    /** Macro to configure SAI1BlockB clock source selection
+     */
+    __HAL_RCC_SAI_BLOCKBCLKSOURCE_CONFIG(SAI_CLKSOURCE_PLLSAI);
+
+    /** Macro to configure SAI1BlockA clock source selection
+     */
+    __HAL_RCC_SAI_BLOCKACLKSOURCE_CONFIG(SAI_CLKSOURCE_PLLSAI);
 
     /** Configure the main internal regulator output voltage
      */
     __HAL_RCC_PWR_CLK_ENABLE();
-    __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE3);
+    __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
 
     /** Initializes the RCC Oscillators according to the specified parameters
      * in the RCC_OscInitTypeDef structure.
@@ -178,22 +213,54 @@ void SystemClock_Config(void)
     RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
     RCC_OscInitStruct.HSIState = RCC_HSI_ON;
     RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
-    RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
+    RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+    RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSI;
+    RCC_OscInitStruct.PLL.PLLM = 8;
+    RCC_OscInitStruct.PLL.PLLN = 180;
+    RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
+    RCC_OscInitStruct.PLL.PLLQ = 4;
     if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+    {
+        Error_Handler();
+    }
+
+    /** Activate the Over-Drive mode
+     */
+    if (HAL_PWREx_EnableOverDrive() != HAL_OK)
     {
         Error_Handler();
     }
 
     /** Initializes the CPU, AHB and APB buses clocks
      */
-    RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK
-                                  | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
-    RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
+    RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK |
+                                  RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
+    RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
     RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-    RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
-    RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
+    RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV8;
+    RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV8;
 
-    if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK)
+    if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5) != HAL_OK)
+    {
+        Error_Handler();
+    }
+}
+
+/**
+ * @brief Peripherals Common Clock Configuration
+ * @retval None
+ */
+void PeriphCommonClock_Config(void)
+{
+    RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
+
+    /** Initializes the peripherals clock
+     */
+    PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_SAI_PLLSAI;
+    PeriphClkInitStruct.PLLSAI.PLLSAIN = 50;
+    PeriphClkInitStruct.PLLSAI.PLLSAIQ = 2;
+    PeriphClkInitStruct.PLLSAIDivQ = 1;
+    if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
     {
         Error_Handler();
     }
@@ -210,7 +277,8 @@ void SystemClock_Config(void)
 void Error_Handler(void)
 {
     /* USER CODE BEGIN Error_Handler_Debug */
-    /* User can add his own implementation to report the HAL error return state */
+    /* User can add his own implementation to report the HAL error return state
+     */
     __disable_irq();
     while (1)
     {
@@ -221,17 +289,18 @@ void Error_Handler(void)
 }
 #ifdef USE_FULL_ASSERT
 /**
-  * @brief  Reports the name of the source file and the source line number
-  *         where the assert_param error has occurred.
-  * @param  file: pointer to the source file name
-  * @param  line: assert_param error line source number
-  * @retval None
-  */
+ * @brief  Reports the name of the source file and the source line number
+ *         where the assert_param error has occurred.
+ * @param  file: pointer to the source file name
+ * @param  line: assert_param error line source number
+ * @retval None
+ */
 void assert_failed(uint8_t *file, uint32_t line)
 {
-  /* USER CODE BEGIN 6 */
-  /* User can add his own implementation to report the file name and line number,
-     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
-  /* USER CODE END 6 */
+    /* USER CODE BEGIN 6 */
+    /* User can add his own implementation to report the file name and line
+       number, ex: printf("Wrong parameters value: file %s on line %d\r\n",
+       file, line) */
+    /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
