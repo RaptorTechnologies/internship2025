@@ -21,6 +21,7 @@
 #include "adc.h"
 
 /* USER CODE BEGIN 0 */
+#include "audio_processor.h"
 #include "flow.h"
 #include "tim.h"
 /* USER CODE END 0 */
@@ -160,6 +161,12 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
         if (is_state_on(ADC_LED_TOGGLE_PWM))
         {
             htim3.Instance->CCR3 = potentiometer_value;
+        }
+
+        if (is_state_on(AUDIO_MODULATOR))
+        {
+            // Shift value is between -16 and 16
+            audio_proc_set_shift((int16_t)(potentiometer_value >> 7) - 16);
         }
     }
 }

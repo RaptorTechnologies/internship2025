@@ -5,6 +5,7 @@
  *      Author: Andrei Trif
  */
 
+#include "arm_math.h"
 #include "main.h"
 #include "stm32f4xx_hal.h"
 #include <stdint.h>
@@ -68,9 +69,20 @@ void buffs_flush(buffs_t *buffs)
 
 #define BUFF_SIZE 128
 static int16_t raw_buffs[3][BUFF_SIZE * 2];
+static int16_t fft_buff[BUFF_SIZE * 2];
 static buffs_t buffs;
 static SAI_HandleTypeDef *hsai_tx;
 static SAI_HandleTypeDef *hsai_rx;
+static arm_rfft_instance_q15 fft_inst;
+static arm_rfft_instance_q15 fft_inst_inv;
+
+// Shift is set in audio_proc_set_shift which is called in an interrupt
+static volatile int16_t shift;
+
+void audio_proc_set_shift(int16_t s)
+{
+    shift = s;
+}
 
 void sai_tx(void)
 {
@@ -98,6 +110,16 @@ void audio_proc_init(SAI_HandleTypeDef *hsai_transmit,
     buffs_init(&buffs, raw_buffs[0], raw_buffs[1], raw_buffs[2]);
     hsai_tx = hsai_transmit;
     hsai_rx = hsai_receive;
+
+    if (arm_rfft_init_q15(&fft_inst, BUFF_SIZE, 0, 1) != ARM_MATH_SUCCESS)
+    {
+        Error_Handler();
+    }
+
+    if (arm_rfft_init_q15(&fft_inst_inv, BUFF_SIZE, 1, 1) != ARM_MATH_SUCCESS)
+    {
+        Error_Handler();
+    }
 }
 
 void audio_proc_start(void)
@@ -160,6 +182,40 @@ void audio_proc_process(void)
     if (buffs_get_done(&buffs) >= 2)
     {
         // No processing
+        arm_rfft_q15(&fft_inst, buffs.fft, fft_buff);
+
+        // FFT scales our output by 1/BUFF_SIZE, so we have to multiply by
+        // BUFF_SIZE
+        for (int i = 0; i < BUFF_SIZE; ++i)
+        {
+            fft_buff[i] <<= 7;
+        }
+
+        int s = shift;
+        // The output of the fft has BUFF_SIZE complex samples so we need to
+        // shift by twice the shift value
+        if (s > 0)
+        {
+            memmove(fft_buff + s * 2, fft_buff, 2 * (BUFF_SIZE * 2 - s * 2));
+            for (int i = 0; i < s * 2; ++i)
+            {
+                fft_buff[i] = 0;
+            }
+        }
+        else
+        {
+            s = -s;
+            memmove(fft_buff, fft_buff + s * 2, 2 * (BUFF_SIZE * 2 - s * 2));
+            for (int i = BUFF_SIZE * 2 - s * 2; i < BUFF_SIZE * 2; ++i)
+            {
+                fft_buff[i] = 0;
+            }
+        }
+
+        arm_rfft_q15(&fft_inst_inv, fft_buff, buffs.fft);
+
+        // Headphones take stereo data, so we duplicate each value in our fft
+        // buffer
         for (int i = BUFF_SIZE - 1; i >= 0; --i)
         {
             buffs.fft[2 * i] = buffs.fft[i];

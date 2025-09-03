@@ -195,6 +195,8 @@ void init_option(state_t s)
     }
     case AUDIO_MODULATOR:
     {
+        start_resource(RES_TIM1);
+        start_resource(RES_ADC3);
         start_resource(RES_SAI1);
         break;
     }
@@ -248,6 +250,8 @@ void deinit_option(state_t s)
     }
     case AUDIO_MODULATOR:
     {
+        stop_resource(RES_TIM1);
+        stop_resource(RES_ADC3);
         stop_resource(RES_SAI1);
         break;
     }
