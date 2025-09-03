@@ -49,13 +49,15 @@ int wm8994_init_driver(wm8994_t *w, I2C_HandleTypeDef *hi2c, uint16_t addr,
 
     // Before running the cold-start sequence, enable antipop
     reg = set_bit_reg(0, ANTIPOP_2_VMID_BUF_ENA);
-    i2c_write_u16(w, REG_ANTIPOP_2, 0x6C);
+    reg = set_bits_reg(reg, VMID_RAMP_SOFT_FAST_START, ANTIPOP_2_VMID_RAMP,
+                       ANTIPOP_2_VMID_RAMP_LEN);
+    i2c_write_u16(w, REG_ANTIPOP_2, reg);
 
     // Enable vmid
     reg = set_bits_reg(0, PWR_1_VMID_SEL_2x40k, PWR_1_VMID_SEL,
                        PWR_1_VMID_SEL_LEN);
     reg = set_bit_reg(reg, PWR_1_BIAS_ENA);
-    i2c_write_u16(w, REG_PWR_1, 0x13);
+    i2c_write_u16(w, REG_PWR_1, reg);
     HAL_Delay(50);
 
     // AIF1 Clock enable
@@ -99,24 +101,14 @@ int wm8994_init_driver(wm8994_t *w, I2C_HandleTypeDef *hi2c, uint16_t addr,
     i2c_write_u16(w, REG_DAC1_L_VOL, 0x0C0);
     i2c_write_u16(w, REG_DAC1_R_VOL, 0x0C0);
 
-    //    i2c_write_u16(w, 0x410, 0x1800);
-
-    // ADC volume
-    i2c_write_u16(w, 0x400, 0x1C0);
-    i2c_write_u16(w, 0x401, 0x1C0);
+    // ADC volume to 0dB
+    i2c_write_u16(w, REG_AIF1_ADC1_L_VOL, 0x1C0);
 
     // Set GPIO1 to DRC1 signal detect
     // The default function of GPIO1 is AIF1LRCLK which won't let us receive
-    // microphone data, due to the pin being unused.
-    i2c_write_u16(w, 0x700, 0x044D);
-
-    // Mic Bias voltage
-    //    i2c_write_u16(w, 0x3A, 3);
-
-    // Oversampling
-    //    i2c_write_u16(w, 0x620, 0);
-
-    i2c_write_u16(w, REG_ANTIPOP_2, 0x6C | 0x180);
+    // microphone data, due to the pin being unused. So we set the function to
+    // anything other than 0.
+    i2c_write_u16(w, REG_GPIO1, 1);
 
     return 0;
 }
@@ -155,6 +147,7 @@ static void wm8994_enable_path(wm8994_t *w, wm8994_output_t out)
     switch (out)
     {
     case HEADPHONE_OUTPUT:
+    {
         // Enable DAC1 and AIF1DAC1
         reg = set_bit_reg(0, PWR_5_DAC1L_ENA);
         reg = set_bit_reg(reg, PWR_5_DAC1R_ENA);
@@ -176,7 +169,9 @@ static void wm8994_enable_path(wm8994_t *w, wm8994_output_t out)
         i2c_write_u16(w, REG_DAC1_RMR, reg);
 
         break;
+    }
     case HEADPHONE_MIC:
+    {
         // Enable input PGA for IN1L single-ended mic, p -> VMID, n -> input
         reg = set_bit_reg(0, IN_MIX_2_IN1LN_TO_IN1L);
         i2c_write_u16(w, REG_IN_MIX_2, reg);
@@ -189,31 +184,25 @@ static void wm8994_enable_path(wm8994_t *w, wm8994_output_t out)
         // Enable MIXINL_ENA, IN1L is the line from the jack
         reg = set_bit_reg(0, PWR_2_MIXINL_ENA);
         reg = set_bit_reg(reg, PWR_2_IN1L_ENA);
-        i2c_write_u16(w, REG_PWR_2, reg | 0x6000);
+        i2c_write_u16(w, REG_PWR_2, reg | i2c_read_u16(w, REG_PWR_2));
 
         // Enable MICBIAS2
-        i2c_write_u16(w, REG_PWR_1, i2c_read_u16(w, REG_PWR_1) | 0b100000);
-        i2c_write_u16(w, 0x3A, 3);
+        reg = set_bit_reg(0, PWR_1_MICB2_ENA);
+        i2c_write_u16(w, REG_PWR_1, i2c_read_u16(w, REG_PWR_1) | reg);
 
-        // Set Set IN1L_TO_MIXINL and set volume to 0dB
-        i2c_write_u16(w, REG_IN_MIX_3, 0x20);
+        // Set IN1L_TO_MIXINL and set volume to 0dB
+        reg = set_bit_reg(0, IN_MIX_3_IN1L_TO_MIXINL);
+        i2c_write_u16(w, REG_IN_MIX_3, reg);
 
-        // DRC for signal detect
-        i2c_write_u16(w, 0x440, 0x71DA);
-        i2c_write_u16(w, 0x410, 0x3000);
-
-        // IN1L PGA unmute
-        i2c_write_u16(w, 0x18, 0xB);
+        // IN1L PGA unmute and set it to 0dB
+        i2c_write_u16(w, REG_L_IN12_VOL, 0xB);
 
         // ADC1 -> ADC1R_TO_AIF1
         reg = set_bit_reg(0, ADC1_LMR_ADC1L_TO_AIF1ADC1L);
-        i2c_write_u16(w, REG_ADC1_LMR, 3);
-        reg = set_bit_reg(0, ADC1_RMR_ADC1R_TO_AIF1ADC1R);
-        i2c_write_u16(w, REG_ADC1_RMR, 3);
-        i2c_write_u16(w, 0x608, 3);
-        i2c_write_u16(w, 0x609, 3);
+        i2c_write_u16(w, REG_ADC1_LMR, reg);
 
         break;
+    }
     default:
         break;
     }
