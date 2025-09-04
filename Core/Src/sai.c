@@ -239,8 +239,7 @@ void HAL_SAI_MspDeInit(SAI_HandleTypeDef *saiHandle)
         PF9     ------> SAI1_FS_B
         PF8     ------> SAI1_SCK_B
         */
-        HAL_GPIO_DeInit(GPIOF,
-                        GPIO_PIN_7 | GPIO_PIN_6 | GPIO_PIN_9 | GPIO_PIN_8);
+        HAL_GPIO_DeInit(GPIOF, GPIO_PIN_7 | GPIO_PIN_6 | GPIO_PIN_9 | GPIO_PIN_8);
 
         HAL_DMA_DeInit(saiHandle->hdmarx);
         HAL_DMA_DeInit(saiHandle->hdmatx);

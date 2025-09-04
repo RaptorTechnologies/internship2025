@@ -86,9 +86,7 @@ void audio_proc_set_shift(int16_t s)
 
 void sai_tx(void)
 {
-    HAL_StatusTypeDef s;
-    if ((s = HAL_SAI_Transmit_DMA(hsai_tx, (uint8_t *)buffs.hp,
-                                  BUFF_SIZE * 2)) != HAL_OK)
+    if (HAL_SAI_Transmit_DMA(hsai_tx, (uint8_t *)buffs.hp, BUFF_SIZE * 2) != HAL_OK)
     {
         Error_Handler();
     }
@@ -96,16 +94,13 @@ void sai_tx(void)
 
 void sai_rx(void)
 {
-    HAL_StatusTypeDef s;
-    if ((s = HAL_SAI_Receive_DMA(hsai_rx, (uint8_t *)buffs.mic, BUFF_SIZE)) !=
-        HAL_OK)
+    if (HAL_SAI_Receive_DMA(hsai_rx, (uint8_t *)buffs.mic, BUFF_SIZE) != HAL_OK)
     {
         Error_Handler();
     }
 }
 
-void audio_proc_init(SAI_HandleTypeDef *hsai_transmit,
-                     SAI_HandleTypeDef *hsai_receive)
+void audio_proc_init(SAI_HandleTypeDef *hsai_transmit, SAI_HandleTypeDef *hsai_receive)
 {
     buffs_init(&buffs, raw_buffs[0], raw_buffs[1], raw_buffs[2]);
     hsai_tx = hsai_transmit;
@@ -159,6 +154,10 @@ void HAL_SAI_TxCpltCallback(SAI_HandleTypeDef *hsai)
     sai_tx();
 }
 
+void HAL_SAI_ErrorCallback(SAI_HandleTypeDef *hsai) {
+    Error_Handler();
+}
+
 void HAL_SAI_RxCpltCallback(SAI_HandleTypeDef *hsai)
 {
     if (buffs_get_done(&buffs) >= 2)
@@ -181,13 +180,17 @@ void audio_proc_process(void)
 {
     if (buffs_get_done(&buffs) >= 2)
     {
-        // No processing
         arm_rfft_q15(&fft_inst, buffs.fft, fft_buff);
 
         // FFT scales our output by 1/BUFF_SIZE, so we have to multiply by
         // BUFF_SIZE
         for (int i = 0; i < BUFF_SIZE; ++i)
         {
+            if (i % 2 == 0) {
+                if (fft_buff[i] * fft_buff[i] <= 1) {
+                    fft_buff[i] = 0;
+                }
+            }
             fft_buff[i] <<= 7;
         }
 
@@ -202,7 +205,7 @@ void audio_proc_process(void)
                 fft_buff[i] = 0;
             }
         }
-        else
+        else if (s < 0)
         {
             s = -s;
             memmove(fft_buff, fft_buff + s * 2, 2 * (BUFF_SIZE * 2 - s * 2));
@@ -218,8 +221,8 @@ void audio_proc_process(void)
         // buffer
         for (int i = BUFF_SIZE - 1; i >= 0; --i)
         {
-            buffs.fft[2 * i] = buffs.fft[i];
-            buffs.fft[2 * i + 1] = buffs.fft[i];
+            buffs.fft[2 * i] = buffs.fft[i] << 1;
+            buffs.fft[2 * i + 1] = buffs.fft[i] << 1;
         }
 
         buffs_flush(&buffs);

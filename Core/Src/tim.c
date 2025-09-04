@@ -624,8 +624,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     // Select TIM5 for debouncing and make sure the button is in the same state
     // as it was when the EXTI interrupt was first triggered.
     // This is checked after 10ms after the first press.
-    if (htim->Instance == TIM5 &&
-        HAL_GPIO_ReadPin(Button_GPIO_Port, Button_Pin) == GPIO_PIN_RESET)
+    if (htim->Instance == TIM5 && HAL_GPIO_ReadPin(Button_GPIO_Port, Button_Pin) == GPIO_PIN_RESET)
     {
         // Stop the timer.
         if (HAL_TIM_Base_Stop_IT(&htim5) != HAL_OK)
@@ -737,8 +736,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
             // second.
             while (queue_peek(&recordings, &next))
             {
-                if (next - current <=
-                    get_option(BUTTON_INTERVAL_KEEP_LED_ON_TIME))
+                if (next - current <= get_option(BUTTON_INTERVAL_KEEP_LED_ON_TIME))
                 {
                     current = next;
                 }
@@ -751,8 +749,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
             // The time we keep the led on is the entire combined interval plus
             // a second.
-            htim->Instance->ARR =
-                current + get_option(BUTTON_INTERVAL_KEEP_LED_ON_TIME) - start;
+            htim->Instance->ARR = current + get_option(BUTTON_INTERVAL_KEEP_LED_ON_TIME) - start;
         }
 
         HAL_GPIO_TogglePin(Toggle4_GPIO_Port, Toggle4_Pin);

@@ -120,8 +120,7 @@ int main(void)
     // We need the MCLK for codec configuration
     SAI1_Block_B->CR1 |= (1L << 16L);
 
-    if (wm8994_init_driver(&w, &hi2c1, STM32429I_EVAL_WM8994_I2C_ADDR,
-                           &Error_Handler))
+    if (wm8994_init_driver(&w, &hi2c1, STM32429I_EVAL_WM8994_I2C_ADDR, &Error_Handler))
     {
         Error_Handler();
     }
@@ -180,7 +179,9 @@ int main(void)
             }
         }
 
-        audio_proc_process();
+        if (is_state_on(AUDIO_MODULATOR)) {
+            audio_proc_process();
+        }
     }
     /* USER CODE END 3 */
 }
@@ -233,8 +234,8 @@ void SystemClock_Config(void)
 
     /** Initializes the CPU, AHB and APB buses clocks
      */
-    RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK |
-                                  RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
+    RCC_ClkInitStruct.ClockType =
+        RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
     RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
     RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
     RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV8;

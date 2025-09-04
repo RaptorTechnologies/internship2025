@@ -8,8 +8,7 @@
 #ifndef INC_AUDIO_PROCESSOR_H_
 #define INC_AUDIO_PROCESSOR_H_
 
-void audio_proc_init(SAI_HandleTypeDef *hsai_transmit,
-                     SAI_HandleTypeDef *hsai_receive);
+void audio_proc_init(SAI_HandleTypeDef *hsai_transmit, SAI_HandleTypeDef *hsai_receive);
 void audio_proc_process(void);
 void audio_proc_start(void);
 void audio_proc_stop(void);

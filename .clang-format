@@ -4,4 +4,4 @@ BreakBeforeBraces: Custom
 BraceWrapping:
   AfterCaseLabel: true
 AlignEscapedNewlines: DontAlign
-ColumnLimit: 80
+ColumnLimit: 100

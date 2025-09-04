@@ -49,9 +49,7 @@ void MX_GPIO_Init(void)
     __HAL_RCC_GPIOF_CLK_ENABLE();
 
     /*Configure GPIO pin Output Level */
-    HAL_GPIO_WritePin(GPIOG,
-                      Toggle4_Pin | Toggle3_Pin | Toggle2_Pin | Toggle1_Pin,
-                      GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(GPIOG, Toggle4_Pin | Toggle3_Pin | Toggle2_Pin | Toggle1_Pin, GPIO_PIN_RESET);
 
     /*Configure GPIO pins : Toggle4_Pin Toggle3_Pin */
     GPIO_InitStruct.Pin = Toggle4_Pin | Toggle3_Pin;
@@ -92,8 +90,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t pin)
     // the pin is the right one and we haven't started
     // debouncing a previour press, we can start debouncing
     // the current press.
-    if ((is_state_on(PUSHBUTTON_TOGGLE) || is_state_on(BUTTON_INTERVAL)) &&
-        (pin == Button_Pin) &&
+    if ((is_state_on(PUSHBUTTON_TOGGLE) || is_state_on(BUTTON_INTERVAL)) && (pin == Button_Pin) &&
         (HAL_TIM_Base_GetState(&htim5) != HAL_TIM_STATE_BUSY))
     {
         if (HAL_TIM_Base_Start_IT(&htim5) != HAL_OK)

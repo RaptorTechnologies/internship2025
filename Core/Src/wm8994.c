@@ -16,8 +16,7 @@ static void i2c_write_u16(wm8994_t *w, uint16_t reg, uint16_t data);
 static uint16_t i2c_read_u16(wm8994_t *w, uint16_t reg);
 static uint16_t set_bit_reg(uint16_t reg_data, uint16_t reg_bit);
 static uint16_t unset_bit_reg(uint16_t reg_data, uint16_t reg_bit);
-static uint16_t set_bits_reg(uint16_t reg_data, uint16_t val, uint16_t start,
-                             uint16_t len);
+static uint16_t set_bits_reg(uint16_t reg_data, uint16_t val, uint16_t start, uint16_t len);
 static uint16_t get_bit_reg(uint16_t reg_data, uint16_t reg_bit);
 static void wm8994_enable_path(wm8994_t *w, wm8994_output_t out);
 static void wm8994_startup_headphones(wm8994_t *w);
@@ -49,13 +48,12 @@ int wm8994_init_driver(wm8994_t *w, I2C_HandleTypeDef *hi2c, uint16_t addr,
 
     // Before running the cold-start sequence, enable antipop
     reg = set_bit_reg(0, ANTIPOP_2_VMID_BUF_ENA);
-    reg = set_bits_reg(reg, VMID_RAMP_SOFT_FAST_START, ANTIPOP_2_VMID_RAMP,
-                       ANTIPOP_2_VMID_RAMP_LEN);
+    reg =
+        set_bits_reg(reg, VMID_RAMP_SOFT_FAST_START, ANTIPOP_2_VMID_RAMP, ANTIPOP_2_VMID_RAMP_LEN);
     i2c_write_u16(w, REG_ANTIPOP_2, reg);
 
     // Enable vmid
-    reg = set_bits_reg(0, PWR_1_VMID_SEL_2x40k, PWR_1_VMID_SEL,
-                       PWR_1_VMID_SEL_LEN);
+    reg = set_bits_reg(0, PWR_1_VMID_SEL_2x40k, PWR_1_VMID_SEL, PWR_1_VMID_SEL_LEN);
     reg = set_bit_reg(reg, PWR_1_BIAS_ENA);
     i2c_write_u16(w, REG_PWR_1, reg);
     HAL_Delay(50);
@@ -66,8 +64,7 @@ int wm8994_init_driver(wm8994_t *w, I2C_HandleTypeDef *hi2c, uint16_t addr,
 
     // Set frequency to 16kHz and rate to 256, our clock is 4.096MHz = 16kHz *
     // 256
-    reg = set_bits_reg(0, AIF1_RATE_256, AIF1_RATE_CLK_RATE,
-                       AIF1_RATE_CLK_RATE_LEN);
+    reg = set_bits_reg(0, AIF1_RATE_256, AIF1_RATE_CLK_RATE, AIF1_RATE_CLK_RATE_LEN);
     reg = set_bits_reg(reg, AIF1_SR_16K, AIF1_RATE_SR, AIF1_RATE_SR_LEN);
     i2c_write_u16(w, REG_AIF1_RATE, reg);
 
@@ -83,10 +80,8 @@ int wm8994_init_driver(wm8994_t *w, I2C_HandleTypeDef *hi2c, uint16_t addr,
     wm8994_enable_path(w, HEADPHONE_MIC);
 
     // I2S protocol with a 16 bit data size. 16 bit * 4 channels = 64 bits
-    reg = set_bits_reg(0, AIF1_CTRL_1_WL_16BIT, AIF1_CTRL_1_WL,
-                       AIF1_CTRL_1_WL_LEN);
-    reg = set_bits_reg(reg, AIF1_CTRL_1_FMT_I2S, AIF1_CTRL_1_FMT,
-                       AIF1_CTRL_1_FMT_LEN);
+    reg = set_bits_reg(0, AIF1_CTRL_1_WL_16BIT, AIF1_CTRL_1_WL, AIF1_CTRL_1_WL_LEN);
+    reg = set_bits_reg(reg, AIF1_CTRL_1_FMT_I2S, AIF1_CTRL_1_FMT, AIF1_CTRL_1_FMT_LEN);
     reg = set_bit_reg(reg, AIF1_CTRL_1_ADCR_SRC);
     i2c_write_u16(w, REG_AIF1_CTRL_1, reg);
 
@@ -94,8 +89,8 @@ int wm8994_init_driver(wm8994_t *w, I2C_HandleTypeDef *hi2c, uint16_t addr,
     wm8994_startup_headphones(w);
 
     // Set outputs to 0dB
-    i2c_write_u16(w, REG_R_OUT_VOL, 0x179);
-    i2c_write_u16(w, REG_L_OUT_VOL, 0x179);
+    i2c_write_u16(w, REG_R_OUT_VOL, 0x17C);
+    i2c_write_u16(w, REG_L_OUT_VOL, 0x17C);
 
     // Set DAC1 to 0dB
     i2c_write_u16(w, REG_DAC1_L_VOL, 0x0C0);
@@ -131,8 +126,7 @@ static void wm8994_startup_headphones(wm8994_t *w)
     HAL_Delay(300);
 
     // Delay 1 ms until CWR is done
-    while (get_bit_reg(i2c_read_u16(w, REG_WR_SEQ_CTRL_2),
-                       WR_SEQ_CTRL_2_WSEQ_BUSY))
+    while (get_bit_reg(i2c_read_u16(w, REG_WR_SEQ_CTRL_2), WR_SEQ_CTRL_2_WSEQ_BUSY))
     {
         HAL_Delay(1);
     }
@@ -201,6 +195,8 @@ static void wm8994_enable_path(wm8994_t *w, wm8994_output_t out)
         reg = set_bit_reg(0, ADC1_LMR_ADC1L_TO_AIF1ADC1L);
         i2c_write_u16(w, REG_ADC1_LMR, reg);
 
+        i2c_write_u16(w, 0x410, 0x7000);
+
         break;
     }
     default:
@@ -211,9 +207,8 @@ static void wm8994_enable_path(wm8994_t *w, wm8994_output_t out)
 static uint16_t i2c_read_u16(wm8994_t *w, uint16_t reg)
 {
     uint16_t c;
-    HAL_StatusTypeDef s;
-    if ((s = HAL_I2C_Mem_Read(w->hi2c, w->addr << 1, reg, I2C_MEMADD_SIZE_16BIT,
-                              (uint8_t *)&c, 2, 10)) != HAL_OK)
+    if (HAL_I2C_Mem_Read(w->hi2c, w->addr << 1, reg, I2C_MEMADD_SIZE_16BIT, (uint8_t *)&c, 2, 10) !=
+        HAL_OK)
     {
         w->error_callback();
     }
@@ -224,8 +219,8 @@ static uint16_t i2c_read_u16(wm8994_t *w, uint16_t reg)
 static void i2c_write_u16(wm8994_t *w, uint16_t reg, uint16_t data)
 {
     data = __builtin_bswap16(data);
-    if (HAL_I2C_Mem_Write(w->hi2c, w->addr << 1, reg, I2C_MEMADD_SIZE_16BIT,
-                          (uint8_t *)&data, 2, 0xFFFF) != HAL_OK)
+    if (HAL_I2C_Mem_Write(w->hi2c, w->addr << 1, reg, I2C_MEMADD_SIZE_16BIT, (uint8_t *)&data, 2,
+                          0xFFFF) != HAL_OK)
     {
         w->error_callback();
     }
@@ -241,8 +236,7 @@ static uint16_t unset_bit_reg(uint16_t reg_data, uint16_t reg_bit)
     return reg_data & ~(1 << reg_bit);
 }
 
-static uint16_t set_bits_reg(uint16_t reg_data, uint16_t val, uint16_t start,
-                             uint16_t len)
+static uint16_t set_bits_reg(uint16_t reg_data, uint16_t val, uint16_t start, uint16_t len)
 {
     uint16_t len_mask = ((1 << len) - 1);
     return (reg_data & ~(len_mask << start)) | ((val & len_mask) << start);
