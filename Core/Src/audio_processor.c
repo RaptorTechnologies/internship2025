@@ -154,7 +154,8 @@ void HAL_SAI_TxCpltCallback(SAI_HandleTypeDef *hsai)
     sai_tx();
 }
 
-void HAL_SAI_ErrorCallback(SAI_HandleTypeDef *hsai) {
+void HAL_SAI_ErrorCallback(SAI_HandleTypeDef *hsai)
+{
     Error_Handler();
 }
 
@@ -186,8 +187,10 @@ void audio_proc_process(void)
         // BUFF_SIZE
         for (int i = 0; i < BUFF_SIZE; ++i)
         {
-            if (i % 2 == 0) {
-                if (fft_buff[i] * fft_buff[i] <= 1) {
+            if (i % 2 == 0)
+            {
+                if (fft_buff[i] * fft_buff[i] <= 1)
+                {
                     fft_buff[i] = 0;
                 }
             }

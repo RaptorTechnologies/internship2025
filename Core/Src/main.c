@@ -179,7 +179,8 @@ int main(void)
             }
         }
 
-        if (is_state_on(AUDIO_MODULATOR)) {
+        if (is_state_on(AUDIO_MODULATOR))
+        {
             audio_proc_process();
         }
     }
