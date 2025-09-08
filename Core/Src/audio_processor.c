@@ -9,6 +9,7 @@
 #include "main.h"
 #include "stm32f4xx_hal.h"
 #include <stdint.h>
+#include <stdlib.h>
 #include <string.h>
 
 // The buffers shift mic -> fft -> hp -> mic
@@ -67,7 +68,7 @@ void buffs_flush(buffs_t *buffs)
     buffs->done = 0;
 }
 
-#define BUFF_SIZE 128
+#define BUFF_SIZE 256
 static int16_t raw_buffs[3][BUFF_SIZE * 2];
 static int16_t fft_buff[BUFF_SIZE * 2];
 static buffs_t buffs;
@@ -183,19 +184,17 @@ void audio_proc_process(void)
     {
         arm_rfft_q15(&fft_inst, buffs.fft, fft_buff);
 
-        // FFT scales our output by 1/BUFF_SIZE, so we have to multiply by
-        // BUFF_SIZE
-        for (int i = 0; i < BUFF_SIZE; ++i)
+        // RFFT scales the input down
+        for (int i = 0; i < BUFF_SIZE + 1; ++i)
         {
-            if (i % 2 == 0)
-            {
-                if (fft_buff[i] * fft_buff[i] <= 1)
-                {
-                    fft_buff[i] = 0;
-                }
-            }
-            fft_buff[i] <<= 7;
+            fft_buff[i] <<= 5;
         }
+
+        // DC and Nyquist
+        int tmp1 = fft_buff[0];
+        int tmp2 = fft_buff[BUFF_SIZE];
+        fft_buff[0] = 0;
+        fft_buff[BUFF_SIZE] = 0;
 
         int s = shift;
         // The output of the fft has BUFF_SIZE complex samples so we need to
@@ -206,17 +205,24 @@ void audio_proc_process(void)
             for (int i = 0; i < s * 2; ++i)
             {
                 fft_buff[i] = 0;
+                fft_buff[i + BUFF_SIZE] = 0;
             }
         }
         else if (s < 0)
         {
             s = -s;
             memmove(fft_buff, fft_buff + s * 2, 2 * (BUFF_SIZE * 2 - s * 2));
-            for (int i = BUFF_SIZE * 2 - s * 2; i < BUFF_SIZE * 2; ++i)
+            for (int i = BUFF_SIZE - s * 2; i < BUFF_SIZE; ++i)
             {
                 fft_buff[i] = 0;
+                fft_buff[i + BUFF_SIZE] = 0;
             }
         }
+
+        fft_buff[0] = tmp1;
+        fft_buff[1] = 0;
+        fft_buff[BUFF_SIZE] = tmp2;
+        fft_buff[BUFF_SIZE + 1] = 0;
 
         arm_rfft_q15(&fft_inst_inv, fft_buff, buffs.fft);
 
@@ -224,8 +230,8 @@ void audio_proc_process(void)
         // buffer
         for (int i = BUFF_SIZE - 1; i >= 0; --i)
         {
-            buffs.fft[2 * i] = buffs.fft[i] << 1;
-            buffs.fft[2 * i + 1] = buffs.fft[i] << 1;
+            buffs.fft[2 * i] = buffs.fft[i];
+            buffs.fft[2 * i + 1] = buffs.fft[i];
         }
 
         buffs_flush(&buffs);

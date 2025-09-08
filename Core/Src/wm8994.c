@@ -89,8 +89,8 @@ int wm8994_init_driver(wm8994_t *w, I2C_HandleTypeDef *hi2c, uint16_t addr,
     wm8994_startup_headphones(w);
 
     // Set outputs to 0dB
-    i2c_write_u16(w, REG_R_OUT_VOL, 0x17C);
-    i2c_write_u16(w, REG_L_OUT_VOL, 0x17C);
+    i2c_write_u16(w, REG_R_OUT_VOL, 0x179);
+    i2c_write_u16(w, REG_L_OUT_VOL, 0x179);
 
     // Set DAC1 to 0dB
     i2c_write_u16(w, REG_DAC1_L_VOL, 0x0C0);
@@ -186,6 +186,7 @@ static void wm8994_enable_path(wm8994_t *w, wm8994_output_t out)
 
         // Set IN1L_TO_MIXINL and set volume to 0dB
         reg = set_bit_reg(0, IN_MIX_3_IN1L_TO_MIXINL);
+        reg = set_bit_reg(reg, IN_MIX_3_IN1L_MIXINL_VOL);
         i2c_write_u16(w, REG_IN_MIX_3, reg);
 
         // IN1L PGA unmute and set it to 0dB
