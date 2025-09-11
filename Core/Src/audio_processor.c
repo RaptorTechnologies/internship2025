@@ -184,12 +184,6 @@ void audio_proc_process(void)
     {
         arm_rfft_q15(&fft_inst, buffs.fft, fft_buff);
 
-        // RFFT scales the input down
-        for (int i = 0; i < BUFF_SIZE + 1; ++i)
-        {
-            fft_buff[i] <<= 5;
-        }
-
         // DC and Nyquist
         int tmp1 = fft_buff[0];
         int tmp2 = fft_buff[BUFF_SIZE];
@@ -225,6 +219,8 @@ void audio_proc_process(void)
         fft_buff[BUFF_SIZE + 1] = 0;
 
         arm_rfft_q15(&fft_inst_inv, fft_buff, buffs.fft);
+
+        arm_shift_q15(buffs.fft, 7, buffs.fft, BUFF_SIZE);
 
         // Headphones take stereo data, so we duplicate each value in our fft
         // buffer
