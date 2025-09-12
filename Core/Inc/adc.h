@@ -22,8 +22,7 @@
 #define __ADC_H__
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 /* Includes ------------------------------------------------------------------*/
@@ -50,3 +49,4 @@ void MX_ADC3_Init(void);
 #endif
 
 #endif /* __ADC_H__ */
+

@@ -7,6 +7,8 @@
 
 #include "flow.h"
 #include "adc.h"
+#include "audio_processor.h"
+#include "sai.h"
 #include "tim.h"
 
 #define HAL_CHECK(expr) \
@@ -17,9 +19,14 @@
 
 static uint32_t state = 0;
 
-static uint32_t task_options[2] = {
-    [BUTTON_INTERVAL_RECORDING_TIME] = 10000, [BUTTON_INTERVAL_KEEP_LED_ON_TIME] = 1000
+#define OPTION_COUNT 2
+
+// clang-format off
+static uint32_t task_options[OPTION_COUNT] = {
+    [BUTTON_INTERVAL_RECORDING_TIME] = 10000,
+    [BUTTON_INTERVAL_KEEP_LED_ON_TIME] = 1000
 };
+// clang-format on
 
 void set_option(option_t opt, uint32_t value)
 {
@@ -38,7 +45,8 @@ typedef enum
     RES_ADC3,
     RES_TIM2,
     RES_TIM3,
-    RES_TIM9
+    RES_TIM9,
+    RES_SAI1
 } resource_t;
 
 static uint8_t resources[5] = { 0 };
@@ -84,6 +92,11 @@ void start_resource(resource_t r)
             HAL_CHECK(HAL_TIM_Base_Start_IT(&htim9));
             break;
         }
+        case RES_SAI1:
+        {
+            audio_proc_start();
+            break;
+        }
         }
     }
     ++resources[r];
@@ -125,10 +138,15 @@ void stop_resource(resource_t r)
         {
             HAL_CHECK(HAL_TIM_Base_Stop_IT(&htim9));
 
-            // We might be in the recording phase so TIM6 might not have started yet.
-            // This resource is managed by TIM9. As long as TIM9 is being used, TIM6 might also be
-            // active.
+            // We might be in the recording phase so TIM6 might not have started
+            // yet. This resource is managed by TIM9. As long as TIM9 is being
+            // used, TIM6 might also be active.
             HAL_TIM_Base_Stop_IT(&htim6);
+            break;
+        }
+        case RES_SAI1:
+        {
+            audio_proc_stop();
             break;
         }
         }
@@ -136,8 +154,8 @@ void stop_resource(resource_t r)
 }
 
 /**
- * @brief Set the new option to run and initialize it if necessary. If the current state isn't
- * WAITING_OPTION, it stops the current option.
+ * @brief Set the new option to run and initialize it if necessary. If the
+ * current state isn't WAITING_OPTION, it stops the current option.
  * @retval None
  */
 void init_option(state_t s)
@@ -181,13 +199,19 @@ void init_option(state_t s)
         start_resource(RES_TIM9);
         break;
     }
-    default:
+    case AUDIO_MODULATOR:
+    {
+        start_resource(RES_TIM1);
+        start_resource(RES_ADC3);
+        start_resource(RES_SAI1);
         break;
+    }
     }
 }
 
 /**
- * @brief Set the state to waiting and deinitialize the previous option if necessary.
+ * @brief Set the state to waiting and deinitialize the previous option if
+ * necessary.
  * @retval None
  */
 void deinit_option(state_t s)
@@ -230,8 +254,13 @@ void deinit_option(state_t s)
         stop_resource(RES_TIM9);
         break;
     }
-    default:
+    case AUDIO_MODULATOR:
+    {
+        stop_resource(RES_TIM1);
+        stop_resource(RES_ADC3);
+        stop_resource(RES_SAI1);
         break;
+    }
     }
 
     state &= ~s;

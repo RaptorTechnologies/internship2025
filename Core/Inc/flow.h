@@ -19,7 +19,8 @@ typedef enum
     ADC_READING = 4,
     ADC_LED_TOGGLE = 8,
     ADC_LED_TOGGLE_PWM = 16,
-    BUTTON_INTERVAL = 32
+    BUTTON_INTERVAL = 32,
+    AUDIO_MODULATOR = 64,
 } state_t;
 
 void toggle_state(state_t s);

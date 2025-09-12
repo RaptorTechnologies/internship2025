@@ -1,9 +1,9 @@
 /* USER CODE BEGIN Header */
 /**
  ******************************************************************************
- * @file    usart.h
+ * @file    sai.h
  * @brief   This file contains all the function prototypes for
- *          the usart.c file
+ *          the sai.c file
  ******************************************************************************
  * @attention
  *
@@ -18,8 +18,8 @@
  */
 /* USER CODE END Header */
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __USART_H__
-#define __USART_H__
+#ifndef __SAI_H__
+#define __SAI_H__
 
 #ifdef __cplusplus
 extern "C" {
@@ -29,27 +29,26 @@ extern "C" {
 #include "main.h"
 
 /* USER CODE BEGIN Includes */
-#include "queue.h"
+
 /* USER CODE END Includes */
 
-extern UART_HandleTypeDef huart4;
+extern SAI_HandleTypeDef hsai_BlockA1;
+
+extern SAI_HandleTypeDef hsai_BlockB1;
 
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
 
-void MX_UART4_Init(void);
+void MX_SAI1_Init(void);
 
 /* USER CODE BEGIN Prototypes */
-bool command_queue_pop(uint32_t *s);
-void start_receiving(void);
-void stop_receiving(void);
-int read_int(void);
+
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* __USART_H__ */
+#endif /* __SAI_H__ */
 
