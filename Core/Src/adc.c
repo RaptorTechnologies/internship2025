@@ -133,8 +133,9 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef *adcHandle)
 }
 
 /* USER CODE BEGIN 1 */
-const uint32_t TIMER_MAX = 1000;
-const uint32_t TIMER_MIN = 100;
+#define TIMER_MAX 1000
+#define TIMER_MIN 100
+
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
     if (hadc->Instance == ADC3)

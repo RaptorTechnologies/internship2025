@@ -11,62 +11,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-
-// The buffers shift mic -> fft -> hp -> mic
-// Once cycled, the processed data is written to fft and the "done" counter is
-// reset
-typedef struct
-{
-    // Used by the RX DMA
-    int16_t *mic;
-
-    // Being processed
-    int16_t *fft;
-
-    // Used by the TX DMA
-    int16_t *hp;
-
-    // Number of DMAs that are done
-    int done;
-} buffs_t;
-
-void swap(void **a, void **b)
-{
-    void *tmp = *a;
-    *a = *b;
-    *b = tmp;
-}
-
-void buffs_init(buffs_t *buffs, int16_t *b1, int16_t *b2, int16_t *b3)
-{
-    buffs->done = 0;
-    buffs->mic = b1;
-    buffs->fft = b2;
-    buffs->hp = b3;
-}
-
-void buffs_cycle(buffs_t *buffs)
-{
-    swap((void **)&buffs->mic, (void **)&buffs->fft);
-    swap((void **)&buffs->mic, (void **)&buffs->hp);
-}
-
-int buffs_get_done(buffs_t *buffs)
-{
-    return buffs->done;
-}
-
-void buffs_done(buffs_t *buffs)
-{
-    // Either mic or hp has finished sending via DMA
-    ++buffs->done;
-}
-
-void buffs_flush(buffs_t *buffs)
-{
-    // done == 0 signifies that the data in fft is done processing
-    buffs->done = 0;
-}
+#include "audio_buffers.h"
 
 #define BUFF_SIZE 128
 static int16_t raw_buffs[3][BUFF_SIZE * 2];

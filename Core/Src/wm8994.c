@@ -18,7 +18,7 @@ static uint16_t set_bit_reg(uint16_t reg_data, uint16_t reg_bit);
 static uint16_t unset_bit_reg(uint16_t reg_data, uint16_t reg_bit);
 static uint16_t set_bits_reg(uint16_t reg_data, uint16_t val, uint16_t start, uint16_t len);
 static uint16_t get_bit_reg(uint16_t reg_data, uint16_t reg_bit);
-static void wm8994_enable_path(wm8994_t *w, wm8994_output_t out);
+static void wm8994_enable_path(wm8994_t *w, wm8994_path_t out);
 static void wm8994_startup_headphones(wm8994_t *w);
 
 /**
@@ -135,7 +135,7 @@ static void wm8994_startup_headphones(wm8994_t *w)
     i2c_write_u16(w, REG_AIF1_DAC1_FILTERS_1, 0);
 }
 
-static void wm8994_enable_path(wm8994_t *w, wm8994_output_t out)
+static void wm8994_enable_path(wm8994_t *w, wm8994_path_t out)
 {
     uint16_t reg;
     switch (out)

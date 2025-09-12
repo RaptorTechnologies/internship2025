@@ -24,7 +24,7 @@ typedef enum
 {
     HEADPHONE_OUTPUT,
     HEADPHONE_MIC,
-} wm8994_output_t;
+} wm8994_path_t;
 
 int wm8994_init_driver(wm8994_t *w, I2C_HandleTypeDef *hi2c, uint16_t addr,
                        void (*error_callback)(void));
