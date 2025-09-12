@@ -21,9 +21,12 @@ static uint32_t state = 0;
 
 #define OPTION_COUNT 2
 
+// clang-format off
 static uint32_t task_options[OPTION_COUNT] = {
-    [BUTTON_INTERVAL_RECORDING_TIME] = 10000, [BUTTON_INTERVAL_KEEP_LED_ON_TIME] = 1000
+    [BUTTON_INTERVAL_RECORDING_TIME] = 10000,
+    [BUTTON_INTERVAL_KEEP_LED_ON_TIME] = 1000
 };
+// clang-format on
 
 void set_option(option_t opt, uint32_t value)
 {
