@@ -33,10 +33,9 @@ void buffs_flush(buffs_t *buffs)
     buffs->done = 0;
 }
 
-void swap(void **a, void **b)
+static void swap(void **a, void **b)
 {
     void *tmp = *a;
     *a = *b;
     *b = tmp;
 }
-

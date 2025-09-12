@@ -42,8 +42,8 @@ void MX_ADC3_Init(void)
 
     /* USER CODE END ADC3_Init 1 */
 
-    /** Configure the global features of the ADC (Clock, Resolution, Data
-     * Alignment and number of conversion)
+    /** Configure the global features of the ADC (Clock, Resolution, Data Alignment and number of
+     * conversion)
      */
     hadc3.Instance = ADC3;
     hadc3.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV2;
@@ -63,8 +63,8 @@ void MX_ADC3_Init(void)
         Error_Handler();
     }
 
-    /** Configure for the selected ADC regular channel its corresponding rank in
-     * the sequencer and its sample time.
+    /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and
+     * its sample time.
      */
     sConfig.Channel = ADC_CHANNEL_8;
     sConfig.Rank = 1;
@@ -164,8 +164,8 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
 
         if (is_state_on(AUDIO_MODULATOR))
         {
-            // Shift value is between -16 and 16
-            audio_proc_set_shift((int16_t)(potentiometer_value >> 7) - 16);
+            // Shift value is between -4 and 4
+            audio_proc_set_shift((int16_t)(potentiometer_value >> 9) - 4);
         }
     }
 }

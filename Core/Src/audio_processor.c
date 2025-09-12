@@ -6,12 +6,12 @@
  */
 
 #include "arm_math.h"
+#include "audio_buffers.h"
 #include "main.h"
 #include "stm32f4xx_hal.h"
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#include "audio_buffers.h"
 
 #define BUFF_SIZE 128
 static int16_t raw_buffs[3][BUFF_SIZE * 2];

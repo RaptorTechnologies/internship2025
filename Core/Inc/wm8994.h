@@ -11,7 +11,7 @@
 #include "stm32f4xx_hal.h"
 #include "stm32f4xx_hal_i2c.h"
 
-#define STM32429I_EVAL_WM8994_I2C_ADDR 0b0011010
+#define STM32429I_EVAL_WM8994_I2C_ADDR 0x1A
 
 typedef struct
 {

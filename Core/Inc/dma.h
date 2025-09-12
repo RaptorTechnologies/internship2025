@@ -29,8 +29,7 @@ extern "C"
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 
-/* DMA memory to memory transfer handles
- * -------------------------------------*/
+/* DMA memory to memory transfer handles -------------------------------------*/
 
 /* USER CODE BEGIN Includes */
 

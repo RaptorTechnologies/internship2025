@@ -8,6 +8,8 @@
 #ifndef INC_AUDIO_PROCESSOR_H_
 #define INC_AUDIO_PROCESSOR_H_
 
+#include <stdint.h>
+
 // The buffers shift mic -> fft -> hp -> mic
 // Once cycled, the processed data is written to fft and the "done" counter is
 // reset
