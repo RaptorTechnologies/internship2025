@@ -10,9 +10,9 @@
 #include "../../../Utils/Fonts/fonts.h"
 #include <string.h>
 
-#define TEXT_8BIT_LEN(s) (strlen(s) * 6 - 1)
+#define TEXT_8BIT_LEN(s) (strlen(s) * 5)
 #define TEXT_8BIT_HEIGHT 8
-#define TEXT_8BIT_WIDTH 5
+#define TEXT_8BIT_WIDTH 4
 
 static int x_size = 0;
 static int y_size = 0;
@@ -93,6 +93,12 @@ void graph_draw_axis(void)
     BSP_LCD_DisplayStringAt(w - TEXT_8BIT_LEN(graph_title), 0, (uint8_t *)graph_title, LEFT_MODE);
 }
 
+void graph_change_mode(graph_display_mode_t display_mode) {
+    BSP_LCD_SetTextColor(bg_color);
+    BSP_LCD_FillRect(x_gap, y_gap, w - 2 * x_gap, h - 2 * y_gap);
+    mode = display_mode;
+}
+
 void graph_update_x_value(int x, int y)
 {
     int screen_x = x_gap + x * pixels_per_sample;
@@ -111,7 +117,9 @@ void graph_update_x_value(int x, int y)
     }
     case MODE_POINT:
     {
-        BSP_LCD_DrawPixel(screen_x, screen_y, bg_color);
+        BSP_LCD_FillRect(screen_x + pixels_per_sample / 2 - 1, y_gap, 2, h - 2 * y_gap);
+
+        BSP_LCD_DrawPixel(screen_x + pixels_per_sample / 2, screen_y, line_color[0]);
         break;
     }
     }

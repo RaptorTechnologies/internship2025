@@ -114,13 +114,25 @@ int main(void)
     BSP_LCD_Init();
     BSP_LCD_LayerDefaultInit(1, LCD_FB_START_ADDRESS);
     BSP_LCD_SelectLayer(1);
+
+    const int w = 128;
+    const int h = 50;
+    graph_init(w, h, "Frequency bins", "Amplitude", "FFT graph");
+    graph_draw_axis();
+    graph_change_mode(MODE_POINT);
     /* USER CODE END 2 */
 
     /* Infinite loop */
     /* USER CODE BEGIN WHILE */
     uint32_t current_command;
+    int x = 0;
+    int y = 0;
     while (1)
     {
+        x = (x + 1) % w;
+        y = (y + 1) % h;
+        graph_update_x_value(x, y);
+        HAL_Delay(1);
         /* USER CODE END WHILE */
 
         /* USER CODE BEGIN 3 */
