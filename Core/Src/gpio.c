@@ -22,8 +22,8 @@
 #include "gpio.h"
 
 /* USER CODE BEGIN 0 */
-#include "tim.h"
 #include "flow.h"
+#include "tim.h"
 /* USER CODE END 0 */
 
 /*----------------------------------------------------------------------------*/
@@ -41,15 +41,20 @@ void MX_GPIO_Init(void)
     GPIO_InitTypeDef GPIO_InitStruct = { 0 };
 
     /* GPIO Ports Clock Enable */
-    __HAL_RCC_GPIOC_CLK_ENABLE();
+    __HAL_RCC_GPIOE_CLK_ENABLE();
+    __HAL_RCC_GPIOB_CLK_ENABLE();
     __HAL_RCC_GPIOG_CLK_ENABLE();
+    __HAL_RCC_GPIOD_CLK_ENABLE();
+    __HAL_RCC_GPIOC_CLK_ENABLE();
     __HAL_RCC_GPIOA_CLK_ENABLE();
+    __HAL_RCC_GPIOI_CLK_ENABLE();
+    __HAL_RCC_GPIOK_CLK_ENABLE();
     __HAL_RCC_GPIOF_CLK_ENABLE();
+    __HAL_RCC_GPIOH_CLK_ENABLE();
+    __HAL_RCC_GPIOJ_CLK_ENABLE();
 
     /*Configure GPIO pin Output Level */
-    HAL_GPIO_WritePin(GPIOG,
-            Toggle4_Pin | Toggle3_Pin | Toggle2_Pin | Toggle1_Pin,
-            GPIO_PIN_RESET);
+    HAL_GPIO_WritePin(GPIOG, Toggle4_Pin | Toggle3_Pin | Toggle2_Pin | Toggle1_Pin, GPIO_PIN_RESET);
 
     /*Configure GPIO pins : Toggle4_Pin Toggle3_Pin */
     GPIO_InitStruct.Pin = Toggle4_Pin | Toggle3_Pin;
@@ -81,7 +86,6 @@ void MX_GPIO_Init(void)
     /* EXTI interrupt init*/
     HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
     HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
-
 }
 
 /* USER CODE BEGIN 2 */
@@ -91,8 +95,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t pin)
     // the pin is the right one and we haven't started
     // debouncing a previour press, we can start debouncing
     // the current press.
-    if ((is_state_on(PUSHBUTTON_TOGGLE) || is_state_on(BUTTON_INTERVAL)) &&
-        (pin == Button_Pin) &&
+    if ((is_state_on(PUSHBUTTON_TOGGLE) || is_state_on(BUTTON_INTERVAL)) && (pin == Button_Pin) &&
         (HAL_TIM_Base_GetState(&htim5) != HAL_TIM_STATE_BUSY))
     {
         if (HAL_TIM_Base_Start_IT(&htim5) != HAL_OK)
