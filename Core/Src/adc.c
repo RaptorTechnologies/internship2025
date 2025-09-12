@@ -36,7 +36,7 @@ void MX_ADC3_Init(void)
 
     /* USER CODE END ADC3_Init 0 */
 
-    ADC_ChannelConfTypeDef sConfig = {0};
+    ADC_ChannelConfTypeDef sConfig = { 0 };
 
     /* USER CODE BEGIN ADC3_Init 1 */
 
@@ -81,7 +81,7 @@ void MX_ADC3_Init(void)
 void HAL_ADC_MspInit(ADC_HandleTypeDef *adcHandle)
 {
 
-    GPIO_InitTypeDef GPIO_InitStruct = {0};
+    GPIO_InitTypeDef GPIO_InitStruct = { 0 };
     if (adcHandle->Instance == ADC3)
     {
         /* USER CODE BEGIN ADC3_MspInit 0 */

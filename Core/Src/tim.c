@@ -41,10 +41,10 @@ void MX_TIM1_Init(void)
 
     /* USER CODE END TIM1_Init 0 */
 
-    TIM_ClockConfigTypeDef sClockSourceConfig = {0};
-    TIM_MasterConfigTypeDef sMasterConfig = {0};
-    TIM_OC_InitTypeDef sConfigOC = {0};
-    TIM_BreakDeadTimeConfigTypeDef sBreakDeadTimeConfig = {0};
+    TIM_ClockConfigTypeDef sClockSourceConfig = { 0 };
+    TIM_MasterConfigTypeDef sMasterConfig = { 0 };
+    TIM_OC_InitTypeDef sConfigOC = { 0 };
+    TIM_BreakDeadTimeConfigTypeDef sBreakDeadTimeConfig = { 0 };
 
     /* USER CODE BEGIN TIM1_Init 1 */
 
@@ -110,8 +110,8 @@ void MX_TIM2_Init(void)
 
     /* USER CODE END TIM2_Init 0 */
 
-    TIM_ClockConfigTypeDef sClockSourceConfig = {0};
-    TIM_MasterConfigTypeDef sMasterConfig = {0};
+    TIM_ClockConfigTypeDef sClockSourceConfig = { 0 };
+    TIM_MasterConfigTypeDef sMasterConfig = { 0 };
 
     /* USER CODE BEGIN TIM2_Init 1 */
 
@@ -149,9 +149,9 @@ void MX_TIM3_Init(void)
 
     /* USER CODE END TIM3_Init 0 */
 
-    TIM_ClockConfigTypeDef sClockSourceConfig = {0};
-    TIM_MasterConfigTypeDef sMasterConfig = {0};
-    TIM_OC_InitTypeDef sConfigOC = {0};
+    TIM_ClockConfigTypeDef sClockSourceConfig = { 0 };
+    TIM_MasterConfigTypeDef sMasterConfig = { 0 };
+    TIM_OC_InitTypeDef sConfigOC = { 0 };
 
     /* USER CODE BEGIN TIM3_Init 1 */
 
@@ -202,8 +202,8 @@ void MX_TIM4_Init(void)
 
     /* USER CODE END TIM4_Init 0 */
 
-    TIM_ClockConfigTypeDef sClockSourceConfig = {0};
-    TIM_MasterConfigTypeDef sMasterConfig = {0};
+    TIM_ClockConfigTypeDef sClockSourceConfig = { 0 };
+    TIM_MasterConfigTypeDef sMasterConfig = { 0 };
 
     /* USER CODE BEGIN TIM4_Init 1 */
 
@@ -241,8 +241,8 @@ void MX_TIM5_Init(void)
 
     /* USER CODE END TIM5_Init 0 */
 
-    TIM_ClockConfigTypeDef sClockSourceConfig = {0};
-    TIM_MasterConfigTypeDef sMasterConfig = {0};
+    TIM_ClockConfigTypeDef sClockSourceConfig = { 0 };
+    TIM_MasterConfigTypeDef sMasterConfig = { 0 };
 
     /* USER CODE BEGIN TIM5_Init 1 */
 
@@ -280,7 +280,7 @@ void MX_TIM6_Init(void)
 
     /* USER CODE END TIM6_Init 0 */
 
-    TIM_MasterConfigTypeDef sMasterConfig = {0};
+    TIM_MasterConfigTypeDef sMasterConfig = { 0 };
 
     /* USER CODE BEGIN TIM6_Init 1 */
 
@@ -312,7 +312,7 @@ void MX_TIM9_Init(void)
 
     /* USER CODE END TIM9_Init 0 */
 
-    TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+    TIM_ClockConfigTypeDef sClockSourceConfig = { 0 };
 
     /* USER CODE BEGIN TIM9_Init 1 */
 
@@ -447,7 +447,7 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef *tim_baseHandle)
 void HAL_TIM_MspPostInit(TIM_HandleTypeDef *timHandle)
 {
 
-    GPIO_InitTypeDef GPIO_InitStruct = {0};
+    GPIO_InitTypeDef GPIO_InitStruct = { 0 };
     if (timHandle->Instance == TIM1)
     {
         /* USER CODE BEGIN TIM1_MspPostInit 0 */
@@ -607,7 +607,7 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef *tim_baseHandle)
 }
 
 /* USER CODE BEGIN 1 */
-static queue_t recordings = {0};
+static queue_t recordings = { 0 };
 static bool finished_recording = false;
 static bool led_on = false;
 static uint32_t repeat_queue;

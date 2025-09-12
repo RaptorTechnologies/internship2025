@@ -193,8 +193,8 @@ int main(void)
  */
 void SystemClock_Config(void)
 {
-    RCC_OscInitTypeDef RCC_OscInitStruct = {0};
-    RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+    RCC_OscInitTypeDef RCC_OscInitStruct = { 0 };
+    RCC_ClkInitTypeDef RCC_ClkInitStruct = { 0 };
 
     /** Macro to configure SAI1BlockB clock source selection
      */
@@ -254,7 +254,7 @@ void SystemClock_Config(void)
  */
 void PeriphCommonClock_Config(void)
 {
-    RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
+    RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = { 0 };
 
     /** Initializes the peripherals clock
      */

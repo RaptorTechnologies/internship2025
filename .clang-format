@@ -5,3 +5,6 @@ BraceWrapping:
   AfterCaseLabel: true
 AlignEscapedNewlines: DontAlign
 ColumnLimit: 100
+IndentExternBlock: NoIndent
+Cpp11BracedListStyle: false
+

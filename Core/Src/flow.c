@@ -22,7 +22,8 @@ static uint32_t state = 0;
 #define OPTION_COUNT 2
 
 static uint32_t task_options[OPTION_COUNT] = {
-    [BUTTON_INTERVAL_RECORDING_TIME] = 10000, [BUTTON_INTERVAL_KEEP_LED_ON_TIME] = 1000};
+    [BUTTON_INTERVAL_RECORDING_TIME] = 10000, [BUTTON_INTERVAL_KEEP_LED_ON_TIME] = 1000
+};
 
 void set_option(option_t opt, uint32_t value)
 {
@@ -45,7 +46,7 @@ typedef enum
     RES_SAI1
 } resource_t;
 
-static uint8_t resources[5] = {0};
+static uint8_t resources[5] = { 0 };
 bool is_resource_on(resource_t r)
 {
     return resources[r] != 0;

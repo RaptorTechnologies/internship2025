@@ -22,7 +22,7 @@
 
 /* USER CODE BEGIN 0 */
 #include <ctype.h>
-queue_t command_queue = {0};
+queue_t command_queue = { 0 };
 
 volatile uint8_t char_rx;
 
@@ -69,7 +69,7 @@ void MX_UART4_Init(void)
 void HAL_UART_MspInit(UART_HandleTypeDef *uartHandle)
 {
 
-    GPIO_InitTypeDef GPIO_InitStruct = {0};
+    GPIO_InitTypeDef GPIO_InitStruct = { 0 };
     if (uartHandle->Instance == UART4)
     {
         /* USER CODE BEGIN UART4_MspInit 0 */
