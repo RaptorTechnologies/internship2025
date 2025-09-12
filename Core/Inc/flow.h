@@ -19,7 +19,8 @@ typedef enum
     ADC_READING = 4,
     ADC_LED_TOGGLE = 8,
     ADC_LED_TOGGLE_PWM = 16,
-    BUTTON_INTERVAL = 32
+    BUTTON_INTERVAL = 32,
+    AUDIO_MODULATOR = 64,
 } state_t;
 
 void toggle_state(state_t s);
@@ -27,7 +28,8 @@ bool is_state_on(state_t s);
 
 typedef enum
 {
-    BUTTON_INTERVAL_RECORDING_TIME, BUTTON_INTERVAL_KEEP_LED_ON_TIME,
+    BUTTON_INTERVAL_RECORDING_TIME,
+    BUTTON_INTERVAL_KEEP_LED_ON_TIME,
 } option_t;
 void set_option(option_t opt, uint32_t value);
 uint32_t get_option(option_t opt);

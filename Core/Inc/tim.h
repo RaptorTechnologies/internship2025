@@ -22,7 +22,8 @@
 #define __TIM_H__
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 /* Includes ------------------------------------------------------------------*/
@@ -69,4 +70,3 @@ void reset_recordings(void);
 #endif
 
 #endif /* __TIM_H__ */
-

@@ -59,12 +59,11 @@ void MX_UART4_Init(void)
         Error_Handler();
     }
     /* USER CODE BEGIN UART4_Init 2 */
-    if (HAL_UART_Receive_IT(&huart4, (uint8_t*) &char_rx, 1) != HAL_OK)
+    if (HAL_UART_Receive_IT(&huart4, (uint8_t *)&char_rx, 1) != HAL_OK)
     {
         Error_Handler();
     }
     /* USER CODE END UART4_Init 2 */
-
 }
 
 void HAL_UART_MspInit(UART_HandleTypeDef *uartHandle)
@@ -81,9 +80,9 @@ void HAL_UART_MspInit(UART_HandleTypeDef *uartHandle)
 
         __HAL_RCC_GPIOC_CLK_ENABLE();
         /**UART4 GPIO Configuration
-         PC11     ------> UART4_RX
-         PC10     ------> UART4_TX
-         */
+        PC11     ------> UART4_RX
+        PC10     ------> UART4_TX
+        */
         GPIO_InitStruct.Pin = GPIO_PIN_11 | GPIO_PIN_10;
         GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
         GPIO_InitStruct.Pull = GPIO_NOPULL;
@@ -112,9 +111,9 @@ void HAL_UART_MspDeInit(UART_HandleTypeDef *uartHandle)
         __HAL_RCC_UART4_CLK_DISABLE();
 
         /**UART4 GPIO Configuration
-         PC11     ------> UART4_RX
-         PC10     ------> UART4_TX
-         */
+        PC11     ------> UART4_RX
+        PC10     ------> UART4_TX
+        */
         HAL_GPIO_DeInit(GPIOC, GPIO_PIN_11 | GPIO_PIN_10);
 
         /* UART4 interrupt Deinit */
@@ -134,7 +133,7 @@ bool command_queue_pop(uint32_t *s)
 
 void start_receiving(void)
 {
-    HAL_UART_Receive_IT(&huart4, (uint8_t*) &char_rx, 1);
+    HAL_UART_Receive_IT(&huart4, (uint8_t *)&char_rx, 1);
 }
 
 void stop_receiving(void)
@@ -184,7 +183,7 @@ int read_int(void)
 PUTCHAR_PROTOTYPE
 {
     // Transmit the character to UART4 in blocking mode with the max timeout.
-    HAL_UART_Transmit(&huart4, (uint8_t*) &ch, 1, 0xFFFF);
+    HAL_UART_Transmit(&huart4, (uint8_t *)&ch, 1, 0xFFFF);
 
     return ch;
 }
@@ -195,7 +194,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
     {
         queue_push_overwrite(&command_queue, char_rx);
 
-        if (HAL_UART_Receive_IT(huart, (uint8_t*) &char_rx, 1) != HAL_OK)
+        if (HAL_UART_Receive_IT(huart, (uint8_t *)&char_rx, 1) != HAL_OK)
         {
             Error_Handler();
         }
