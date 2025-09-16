@@ -93,7 +93,8 @@ void graph_draw_axis(void)
     BSP_LCD_DisplayStringAt(w - TEXT_8BIT_LEN(graph_title), 0, (uint8_t *)graph_title, LEFT_MODE);
 }
 
-void graph_change_mode(graph_display_mode_t display_mode) {
+void graph_change_mode(graph_display_mode_t display_mode)
+{
     BSP_LCD_SetTextColor(bg_color);
     BSP_LCD_FillRect(x_gap, y_gap, w - 2 * x_gap, h - 2 * y_gap);
     mode = display_mode;

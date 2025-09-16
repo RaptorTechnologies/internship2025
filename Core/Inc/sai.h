@@ -22,7 +22,8 @@
 #define __SAI_H__
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 /* Includes ------------------------------------------------------------------*/
@@ -51,4 +52,3 @@ void MX_SAI1_Init(void);
 #endif
 
 #endif /* __SAI_H__ */
-

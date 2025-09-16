@@ -21,7 +21,8 @@
 #ifndef __FMC_H
 #define __FMC_H
 #ifdef __cplusplus
- extern "C" {
+extern "C"
+{
 #endif
 
 /* Includes ------------------------------------------------------------------*/
@@ -38,8 +39,8 @@ extern SDRAM_HandleTypeDef hsdram1;
 /* USER CODE END Private defines */
 
 void MX_FMC_Init(void);
-void HAL_SDRAM_MspInit(SDRAM_HandleTypeDef* hsdram);
-void HAL_SDRAM_MspDeInit(SDRAM_HandleTypeDef* hsdram);
+void HAL_SDRAM_MspInit(SDRAM_HandleTypeDef *hsdram);
+void HAL_SDRAM_MspDeInit(SDRAM_HandleTypeDef *hsdram);
 
 /* USER CODE BEGIN Prototypes */
 
@@ -51,9 +52,9 @@ void HAL_SDRAM_MspDeInit(SDRAM_HandleTypeDef* hsdram);
 #endif /*__FMC_H */
 
 /**
-  * @}
-  */
+ * @}
+ */
 
 /**
-  * @}
-  */
+ * @}
+ */

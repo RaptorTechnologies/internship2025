@@ -22,7 +22,8 @@
 #define __USART_H__
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 /* Includes ------------------------------------------------------------------*/
@@ -52,4 +53,3 @@ int read_int(void);
 #endif
 
 #endif /* __USART_H__ */
-

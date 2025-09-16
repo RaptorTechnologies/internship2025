@@ -22,7 +22,8 @@
 #define __DMA_H__
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 /* Includes ------------------------------------------------------------------*/
@@ -49,4 +50,3 @@ void MX_DMA_Init(void);
 #endif
 
 #endif /* __DMA_H__ */
-
