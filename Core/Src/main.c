@@ -20,16 +20,21 @@
 #include "main.h"
 #include "adc.h"
 #include "dma.h"
+#include "dma2d.h"
+#include "fmc.h"
 #include "gpio.h"
 #include "i2c.h"
+#include "ltdc.h"
 #include "sai.h"
 #include "tim.h"
 #include "usart.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "../../../Drivers/BSP/STM324x9I_EVAL/stm324x9i_eval_lcd.h"
 #include "audio_processor.h"
 #include "flow.h"
+#include "graph.h"
 #include "queue.h"
 #include "stdio.h"
 #include "stm32f429xx.h"
@@ -112,7 +117,19 @@ int main(void)
     MX_I2C1_Init();
     MX_SAI1_Init();
     MX_UART4_Init();
+    MX_DMA2D_Init();
+    MX_FMC_Init();
+    MX_LTDC_Init();
     /* USER CODE BEGIN 2 */
+    BSP_LCD_Init();
+    BSP_LCD_LayerDefaultInit(1, LCD_FB_START_ADDRESS);
+    BSP_LCD_SelectLayer(1);
+
+    const int width = 128;
+    const int height = 50;
+    graph_init(width, height, "Frequency bins", "Amplitude", "FFT graph");
+    graph_draw_axis();
+
     wm8994_t w;
 
     // We need the MCLK for codec configuration
@@ -129,8 +146,14 @@ int main(void)
     /* Infinite loop */
     /* USER CODE BEGIN WHILE */
     uint32_t current_command;
+    int x = 0;
+    int y = 0;
     while (1)
     {
+        x = (x + 1) % width;
+        y = (y + 1) % height;
+        graph_update_x_value(x, y);
+        HAL_Delay(1);
         /* USER CODE END WHILE */
 
         /* USER CODE BEGIN 3 */
@@ -196,11 +219,11 @@ void SystemClock_Config(void)
 
     /** Macro to configure SAI1BlockB clock source selection
      */
-    __HAL_RCC_SAI_BLOCKBCLKSOURCE_CONFIG(SAI_CLKSOURCE_PLLSAI);
+    __HAL_RCC_SAI_BLOCKBCLKSOURCE_CONFIG(SAI_CLKSOURCE_PLLI2S);
 
     /** Macro to configure SAI1BlockA clock source selection
      */
-    __HAL_RCC_SAI_BLOCKACLKSOURCE_CONFIG(SAI_CLKSOURCE_PLLSAI);
+    __HAL_RCC_SAI_BLOCKACLKSOURCE_CONFIG(SAI_CLKSOURCE_PLLI2S);
 
     /** Configure the main internal regulator output voltage
      */
@@ -256,10 +279,10 @@ void PeriphCommonClock_Config(void)
 
     /** Initializes the peripherals clock
      */
-    PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_SAI_PLLSAI;
-    PeriphClkInitStruct.PLLSAI.PLLSAIN = 50;
-    PeriphClkInitStruct.PLLSAI.PLLSAIQ = 2;
-    PeriphClkInitStruct.PLLSAIDivQ = 1;
+    PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_SAI_PLLI2S;
+    PeriphClkInitStruct.PLLI2S.PLLI2SN = 194;
+    PeriphClkInitStruct.PLLI2S.PLLI2SQ = 3;
+    PeriphClkInitStruct.PLLI2SDivQ = 32;
     if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
     {
         Error_Handler();

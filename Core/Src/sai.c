@@ -78,7 +78,7 @@ void MX_SAI1_Init(void)
     hsai_BlockB1.Init.OutputDrive = SAI_OUTPUTDRIVE_DISABLE;
     hsai_BlockB1.Init.NoDivider = SAI_MASTERDIVIDER_ENABLE;
     hsai_BlockB1.Init.FIFOThreshold = SAI_FIFOTHRESHOLD_EMPTY;
-    hsai_BlockB1.Init.ClockSource = SAI_CLKSOURCE_PLLSAI;
+    hsai_BlockB1.Init.ClockSource = SAI_CLKSOURCE_PLLI2S;
     hsai_BlockB1.Init.AudioFrequency = SAI_AUDIO_FREQUENCY_16K;
     hsai_BlockB1.FrameInit.FrameLength = 64;
     hsai_BlockB1.FrameInit.ActiveFrameLength = 32;
