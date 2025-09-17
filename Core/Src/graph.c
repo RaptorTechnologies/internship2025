@@ -127,5 +127,8 @@ void graph_update_x_value(uint32_t x, uint32_t y)
             BSP_LCD_DrawPixel(screen_x + pixels_per_sample / 2, screen_y, line_color[0]);
             break;
         }
+        default:
+            break;
+        }
     }
 }
