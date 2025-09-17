@@ -129,6 +129,5 @@ void graph_update_x_value(uint32_t x, uint32_t y)
         }
         default:
             break;
-        }
     }
 }
