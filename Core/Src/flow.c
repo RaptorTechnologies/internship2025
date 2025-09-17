@@ -61,42 +61,42 @@ void start_resource(resource_t r)
     {
         switch (r)
         {
-        case RES_TIM4:
-        {
-            HAL_CHECK(HAL_TIM_Base_Start_IT(&htim4));
-            break;
-        }
-        case RES_TIM1:
-        {
-            HAL_CHECK(HAL_TIM_OC_Start_IT(&htim1, TIM_CHANNEL_1));
-            break;
-        }
-        case RES_ADC3:
-        {
-            HAL_CHECK(HAL_ADC_Start_IT(&hadc3));
-            break;
-        }
-        case RES_TIM2:
-        {
-            HAL_CHECK(HAL_TIM_Base_Start_IT(&htim2));
-            break;
-        }
-        case RES_TIM3:
-        {
-            HAL_CHECK(HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3));
-            break;
-        }
-        case RES_TIM9:
-        {
-            htim9.Instance->ARR = get_option(BUTTON_INTERVAL_RECORDING_TIME);
-            HAL_CHECK(HAL_TIM_Base_Start_IT(&htim9));
-            break;
-        }
-        case RES_SAI1:
-        {
-            audio_proc_start();
-            break;
-        }
+            case RES_TIM4:
+            {
+                HAL_CHECK(HAL_TIM_Base_Start_IT(&htim4));
+                break;
+            }
+            case RES_TIM1:
+            {
+                HAL_CHECK(HAL_TIM_OC_Start_IT(&htim1, TIM_CHANNEL_1));
+                break;
+            }
+            case RES_ADC3:
+            {
+                HAL_CHECK(HAL_ADC_Start_IT(&hadc3));
+                break;
+            }
+            case RES_TIM2:
+            {
+                HAL_CHECK(HAL_TIM_Base_Start_IT(&htim2));
+                break;
+            }
+            case RES_TIM3:
+            {
+                HAL_CHECK(HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3));
+                break;
+            }
+            case RES_TIM9:
+            {
+                htim9.Instance->ARR = get_option(BUTTON_INTERVAL_RECORDING_TIME);
+                HAL_CHECK(HAL_TIM_Base_Start_IT(&htim9));
+                break;
+            }
+            case RES_SAI1:
+            {
+                audio_proc_start();
+                break;
+            }
         }
     }
     ++resources[r];
@@ -109,46 +109,46 @@ void stop_resource(resource_t r)
     {
         switch (r)
         {
-        case RES_TIM4:
-        {
-            HAL_CHECK(HAL_TIM_Base_Stop_IT(&htim4));
-            break;
-        }
-        case RES_TIM1:
-        {
-            HAL_CHECK(HAL_TIM_OC_Stop_IT(&htim1, TIM_CHANNEL_1));
-            break;
-        }
-        case RES_ADC3:
-        {
-            HAL_CHECK(HAL_ADC_Stop_IT(&hadc3));
-            break;
-        }
-        case RES_TIM2:
-        {
-            HAL_CHECK(HAL_TIM_Base_Stop_IT(&htim2));
-            break;
-        }
-        case RES_TIM3:
-        {
-            HAL_CHECK(HAL_TIM_PWM_Stop(&htim3, TIM_CHANNEL_3));
-            break;
-        }
-        case RES_TIM9:
-        {
-            HAL_CHECK(HAL_TIM_Base_Stop_IT(&htim9));
+            case RES_TIM4:
+            {
+                HAL_CHECK(HAL_TIM_Base_Stop_IT(&htim4));
+                break;
+            }
+            case RES_TIM1:
+            {
+                HAL_CHECK(HAL_TIM_OC_Stop_IT(&htim1, TIM_CHANNEL_1));
+                break;
+            }
+            case RES_ADC3:
+            {
+                HAL_CHECK(HAL_ADC_Stop_IT(&hadc3));
+                break;
+            }
+            case RES_TIM2:
+            {
+                HAL_CHECK(HAL_TIM_Base_Stop_IT(&htim2));
+                break;
+            }
+            case RES_TIM3:
+            {
+                HAL_CHECK(HAL_TIM_PWM_Stop(&htim3, TIM_CHANNEL_3));
+                break;
+            }
+            case RES_TIM9:
+            {
+                HAL_CHECK(HAL_TIM_Base_Stop_IT(&htim9));
 
-            // We might be in the recording phase so TIM6 might not have started
-            // yet. This resource is managed by TIM9. As long as TIM9 is being
-            // used, TIM6 might also be active.
-            HAL_TIM_Base_Stop_IT(&htim6);
-            break;
-        }
-        case RES_SAI1:
-        {
-            audio_proc_stop();
-            break;
-        }
+                // We might be in the recording phase so TIM6 might not have started
+                // yet. This resource is managed by TIM9. As long as TIM9 is being
+                // used, TIM6 might also be active.
+                HAL_TIM_Base_Stop_IT(&htim6);
+                break;
+            }
+            case RES_SAI1:
+            {
+                audio_proc_stop();
+                break;
+            }
         }
     }
 }
@@ -165,47 +165,47 @@ void init_option(state_t s)
     // Start option.
     switch (s)
     {
-    case WAITING_OPTION:
-        break;
-    case PUSHBUTTON_TOGGLE:
-        break;
-    case TIMER_TOGGLE:
-    {
-        start_resource(RES_TIM4);
-        break;
-    }
-    case ADC_READING:
-    {
-        start_resource(RES_TIM1);
-        start_resource(RES_ADC3);
-        break;
-    }
-    case ADC_LED_TOGGLE:
-    {
-        start_resource(RES_TIM1);
-        start_resource(RES_ADC3);
-        start_resource(RES_TIM2);
-        break;
-    }
-    case ADC_LED_TOGGLE_PWM:
-    {
-        start_resource(RES_TIM1);
-        start_resource(RES_ADC3);
-        start_resource(RES_TIM3);
-        break;
-    }
-    case BUTTON_INTERVAL:
-    {
-        start_resource(RES_TIM9);
-        break;
-    }
-    case AUDIO_MODULATOR:
-    {
-        start_resource(RES_TIM1);
-        start_resource(RES_ADC3);
-        start_resource(RES_SAI1);
-        break;
-    }
+        case WAITING_OPTION:
+            break;
+        case PUSHBUTTON_TOGGLE:
+            break;
+        case TIMER_TOGGLE:
+        {
+            start_resource(RES_TIM4);
+            break;
+        }
+        case ADC_READING:
+        {
+            start_resource(RES_TIM1);
+            start_resource(RES_ADC3);
+            break;
+        }
+        case ADC_LED_TOGGLE:
+        {
+            start_resource(RES_TIM1);
+            start_resource(RES_ADC3);
+            start_resource(RES_TIM2);
+            break;
+        }
+        case ADC_LED_TOGGLE_PWM:
+        {
+            start_resource(RES_TIM1);
+            start_resource(RES_ADC3);
+            start_resource(RES_TIM3);
+            break;
+        }
+        case BUTTON_INTERVAL:
+        {
+            start_resource(RES_TIM9);
+            break;
+        }
+        case AUDIO_MODULATOR:
+        {
+            start_resource(RES_TIM1);
+            start_resource(RES_ADC3);
+            start_resource(RES_SAI1);
+            break;
+        }
     }
 }
 
@@ -219,48 +219,48 @@ void deinit_option(state_t s)
     // Stop option.
     switch (s)
     {
-    case WAITING_OPTION:
-        break;
-    case PUSHBUTTON_TOGGLE:
-        break;
-    case TIMER_TOGGLE:
-    {
-        stop_resource(RES_TIM4);
-        break;
-    }
-    case ADC_READING:
-    {
-        stop_resource(RES_TIM1);
-        stop_resource(RES_ADC3);
-        break;
-    }
-    case ADC_LED_TOGGLE:
-    {
-        stop_resource(RES_TIM1);
-        stop_resource(RES_ADC3);
-        stop_resource(RES_TIM2);
-        break;
-    }
-    case ADC_LED_TOGGLE_PWM:
-    {
-        stop_resource(RES_TIM1);
-        stop_resource(RES_ADC3);
-        stop_resource(RES_TIM3);
-        break;
-    }
-    case BUTTON_INTERVAL:
-    {
-        reset_recordings();
-        stop_resource(RES_TIM9);
-        break;
-    }
-    case AUDIO_MODULATOR:
-    {
-        stop_resource(RES_TIM1);
-        stop_resource(RES_ADC3);
-        stop_resource(RES_SAI1);
-        break;
-    }
+        case WAITING_OPTION:
+            break;
+        case PUSHBUTTON_TOGGLE:
+            break;
+        case TIMER_TOGGLE:
+        {
+            stop_resource(RES_TIM4);
+            break;
+        }
+        case ADC_READING:
+        {
+            stop_resource(RES_TIM1);
+            stop_resource(RES_ADC3);
+            break;
+        }
+        case ADC_LED_TOGGLE:
+        {
+            stop_resource(RES_TIM1);
+            stop_resource(RES_ADC3);
+            stop_resource(RES_TIM2);
+            break;
+        }
+        case ADC_LED_TOGGLE_PWM:
+        {
+            stop_resource(RES_TIM1);
+            stop_resource(RES_ADC3);
+            stop_resource(RES_TIM3);
+            break;
+        }
+        case BUTTON_INTERVAL:
+        {
+            reset_recordings();
+            stop_resource(RES_TIM9);
+            break;
+        }
+        case AUDIO_MODULATOR:
+        {
+            stop_resource(RES_TIM1);
+            stop_resource(RES_ADC3);
+            stop_resource(RES_SAI1);
+            break;
+        }
     }
 
     state &= ~s;

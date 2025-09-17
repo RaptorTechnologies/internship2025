@@ -33,11 +33,13 @@ static uint32_t h;
 static graph_display_mode_t mode = MODE_BAR;
 
 static uint32_t bg_color = LCD_COLOR_DARKGRAY;
-static uint32_t line_color[6] = { LCD_COLOR_GREEN, LCD_COLOR_ORANGE, LCD_COLOR_RED,
-                                  LCD_COLOR_RED,   LCD_COLOR_RED,    LCD_COLOR_RED };
+static uint32_t line_color[6] = {
+    LCD_COLOR_GREEN, LCD_COLOR_ORANGE, LCD_COLOR_RED, LCD_COLOR_RED, LCD_COLOR_RED, LCD_COLOR_RED,
+};
 static int intensity_div = 0;
 
-void graph_init(uint32_t x_samples, uint32_t y_samples, char *x_axis_title, char *y_axis_title, char *title)
+void graph_init(uint32_t x_samples, uint32_t y_samples, char *x_axis_title, char *y_axis_title,
+                char *title)
 {
     x_size = x_samples;
     y_size = y_samples;
@@ -110,20 +112,20 @@ void graph_update_x_value(uint32_t x, uint32_t y)
     BSP_LCD_SetTextColor(bg_color);
     switch (mode)
     {
-    case MODE_BAR:
-    {
-        BSP_LCD_FillRect(screen_x, y_gap, pixels_per_sample, h - 2 * y_gap);
+        case MODE_BAR:
+        {
+            BSP_LCD_FillRect(screen_x, y_gap, pixels_per_sample, h - 2 * y_gap);
 
-        BSP_LCD_SetTextColor(line_color[y / intensity_div]);
-        BSP_LCD_FillRect(screen_x, screen_y, pixels_per_sample, h - screen_y - y_gap);
-        break;
-    }
-    case MODE_POINT:
-    {
-        BSP_LCD_FillRect(screen_x + pixels_per_sample / 2 - 1, y_gap, 2, h - 2 * y_gap);
+            BSP_LCD_SetTextColor(line_color[y / intensity_div]);
+            BSP_LCD_FillRect(screen_x, screen_y, pixels_per_sample, h - screen_y - y_gap);
+            break;
+        }
+        case MODE_POINT:
+        {
+            BSP_LCD_FillRect(screen_x + pixels_per_sample / 2 - 1, y_gap, 2, h - 2 * y_gap);
 
-        BSP_LCD_DrawPixel(screen_x + pixels_per_sample / 2, screen_y, line_color[0]);
-        break;
-    }
+            BSP_LCD_DrawPixel(screen_x + pixels_per_sample / 2, screen_y, line_color[0]);
+            break;
+        }
     }
 }

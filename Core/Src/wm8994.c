@@ -140,68 +140,68 @@ static void wm8994_enable_path(wm8994_t *w, wm8994_path_t out)
     uint16_t reg;
     switch (out)
     {
-    case HEADPHONE_OUTPUT:
-    {
-        // Enable DAC1 and AIF1DAC1
-        reg = set_bit_reg(0, PWR_5_DAC1L_ENA);
-        reg = set_bit_reg(reg, PWR_5_DAC1R_ENA);
-        reg = set_bit_reg(reg, PWR_5_AIF1DAC1L_ENA);
-        reg = set_bit_reg(reg, PWR_5_AIF1DAC1R_ENA);
-        i2c_write_u16(w, REG_PWR_5, reg);
+        case HEADPHONE_OUTPUT:
+        {
+            // Enable DAC1 and AIF1DAC1
+            reg = set_bit_reg(0, PWR_5_DAC1L_ENA);
+            reg = set_bit_reg(reg, PWR_5_DAC1R_ENA);
+            reg = set_bit_reg(reg, PWR_5_AIF1DAC1L_ENA);
+            reg = set_bit_reg(reg, PWR_5_AIF1DAC1R_ENA);
+            i2c_write_u16(w, REG_PWR_5, reg);
 
-        // Direct DAC1 -> HPOUT1
-        reg = set_bit_reg(0, OUT_MIX_1_DAC1L_TO_HPOUT1L);
-        i2c_write_u16(w, REG_OUT_MIX_1, reg);
-        reg = set_bit_reg(0, OUT_MIX_2_DAC1R_TO_HPOUT1R);
-        i2c_write_u16(w, REG_OUT_MIX_2, reg);
+            // Direct DAC1 -> HPOUT1
+            reg = set_bit_reg(0, OUT_MIX_1_DAC1L_TO_HPOUT1L);
+            i2c_write_u16(w, REG_OUT_MIX_1, reg);
+            reg = set_bit_reg(0, OUT_MIX_2_DAC1R_TO_HPOUT1R);
+            i2c_write_u16(w, REG_OUT_MIX_2, reg);
 
-        // AIF1 signal through Left/Right mixer and then DAC1
-        reg = set_bit_reg(0, DAC1_LMR_DAC1L_TO_DAC1L);
-        i2c_write_u16(w, REG_DAC1_LMR, reg);
+            // AIF1 signal through Left/Right mixer and then DAC1
+            reg = set_bit_reg(0, DAC1_LMR_DAC1L_TO_DAC1L);
+            i2c_write_u16(w, REG_DAC1_LMR, reg);
 
-        reg = set_bit_reg(0, DAC1_RMR_DAC1R_TO_DAC1R);
-        i2c_write_u16(w, REG_DAC1_RMR, reg);
+            reg = set_bit_reg(0, DAC1_RMR_DAC1R_TO_DAC1R);
+            i2c_write_u16(w, REG_DAC1_RMR, reg);
 
-        break;
-    }
-    case HEADPHONE_MIC:
-    {
-        // Enable input PGA for IN1L single-ended mic, p -> VMID, n -> input
-        reg = set_bit_reg(0, IN_MIX_2_IN1LN_TO_IN1L);
-        i2c_write_u16(w, REG_IN_MIX_2, reg);
+            break;
+        }
+        case HEADPHONE_MIC:
+        {
+            // Enable input PGA for IN1L single-ended mic, p -> VMID, n -> input
+            reg = set_bit_reg(0, IN_MIX_2_IN1LN_TO_IN1L);
+            i2c_write_u16(w, REG_IN_MIX_2, reg);
 
-        // Enable ADC and AIF1ADC1
-        reg = set_bit_reg(0, PWR_4_ADCL_ENA);
-        reg = set_bit_reg(reg, PWR_4_AIF1ADC1L_ENA);
-        i2c_write_u16(w, REG_PWR_4, reg);
+            // Enable ADC and AIF1ADC1
+            reg = set_bit_reg(0, PWR_4_ADCL_ENA);
+            reg = set_bit_reg(reg, PWR_4_AIF1ADC1L_ENA);
+            i2c_write_u16(w, REG_PWR_4, reg);
 
-        // Enable MIXINL_ENA, IN1L is the line from the jack
-        reg = set_bit_reg(0, PWR_2_MIXINL_ENA);
-        reg = set_bit_reg(reg, PWR_2_IN1L_ENA);
-        i2c_write_u16(w, REG_PWR_2, reg | i2c_read_u16(w, REG_PWR_2));
+            // Enable MIXINL_ENA, IN1L is the line from the jack
+            reg = set_bit_reg(0, PWR_2_MIXINL_ENA);
+            reg = set_bit_reg(reg, PWR_2_IN1L_ENA);
+            i2c_write_u16(w, REG_PWR_2, reg | i2c_read_u16(w, REG_PWR_2));
 
-        // Enable MICBIAS2
-        reg = set_bit_reg(0, PWR_1_MICB2_ENA);
-        i2c_write_u16(w, REG_PWR_1, i2c_read_u16(w, REG_PWR_1) | reg);
+            // Enable MICBIAS2
+            reg = set_bit_reg(0, PWR_1_MICB2_ENA);
+            i2c_write_u16(w, REG_PWR_1, i2c_read_u16(w, REG_PWR_1) | reg);
 
-        // Set IN1L_TO_MIXINL and set volume to 0dB
-        reg = set_bit_reg(0, IN_MIX_3_IN1L_TO_MIXINL);
-        reg = set_bit_reg(reg, IN_MIX_3_IN1L_MIXINL_VOL);
-        i2c_write_u16(w, REG_IN_MIX_3, reg);
+            // Set IN1L_TO_MIXINL and set volume to 0dB
+            reg = set_bit_reg(0, IN_MIX_3_IN1L_TO_MIXINL);
+            reg = set_bit_reg(reg, IN_MIX_3_IN1L_MIXINL_VOL);
+            i2c_write_u16(w, REG_IN_MIX_3, reg);
 
-        // IN1L PGA unmute and set it to 0dB
-        i2c_write_u16(w, REG_L_IN12_VOL, 0xB);
+            // IN1L PGA unmute and set it to 0dB
+            i2c_write_u16(w, REG_L_IN12_VOL, 0xB);
 
-        // ADC1 -> ADC1R_TO_AIF1
-        reg = set_bit_reg(0, ADC1_LMR_ADC1L_TO_AIF1ADC1L);
-        i2c_write_u16(w, REG_ADC1_LMR, reg);
+            // ADC1 -> ADC1R_TO_AIF1
+            reg = set_bit_reg(0, ADC1_LMR_ADC1L_TO_AIF1ADC1L);
+            i2c_write_u16(w, REG_ADC1_LMR, reg);
 
-        i2c_write_u16(w, 0x410, 0x7000);
+            i2c_write_u16(w, 0x410, 0x7000);
 
-        break;
-    }
-    default:
-        break;
+            break;
+        }
+        default:
+            break;
     }
 }
 
