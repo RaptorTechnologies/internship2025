@@ -21,6 +21,7 @@
 #include "tim.h"
 
 /* USER CODE BEGIN 0 */
+#include "audio_processor.h"
 #include "flow.h"
 #include "queue.h"
 /* USER CODE END 0 */
@@ -643,6 +644,33 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
             if (!finished_recording)
             {
                 queue_push_overwrite(&recordings, htim9.Instance->CNT - 10);
+            }
+        }
+
+        if (is_state_on(AUDIO_MODULATOR))
+        {
+            switch (audio_proc_get_display())
+            {
+                case DISPLAY_FFT:
+                {
+                    audio_proc_set_display(DISPLAY_HP_DATA);
+                    break;
+                }
+                case DISPLAY_HP_DATA:
+                {
+                    audio_proc_set_display(DISPLAY_MIC_DATA);
+                    break;
+                }
+                case DISPLAY_MIC_DATA:
+                {
+                    audio_proc_set_display(DISPLAY_FFT);
+                    break;
+                }
+                default:
+                {
+                    audio_proc_set_display(DISPLAY_FFT);
+                    break;
+                }
             }
         }
     }
