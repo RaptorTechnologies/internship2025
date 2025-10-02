@@ -8,6 +8,9 @@
 #ifndef INC_AUDIO_PROCESSOR_H_
 #define INC_AUDIO_PROCESSOR_H_
 
+#include "stm32f4xx_hal.h"
+#include <stdint.h>
+
 typedef enum
 {
     DISPLAY_FFT,

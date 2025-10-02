@@ -10,8 +10,6 @@
 #include "audio_buffers.h"
 #include "graph.h"
 #include "main.h"
-#include "stm32f4xx_hal.h"
-#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -62,6 +60,8 @@ static volatile proc_display_t future_display = DISPLAY_FFT;
 // Shift is set in audio_proc_set_shift which is called in an interrupt
 static volatile int16_t shift;
 
+void _audio_proc_set_display(proc_display_t disp);
+
 void audio_proc_set_shift(int16_t s)
 {
     shift = s;
@@ -100,6 +100,7 @@ void audio_proc_init(SAI_HandleTypeDef *hsai_transmit, SAI_HandleTypeDef *hsai_r
     }
 
     audio_proc_set_display(display);
+    _audio_proc_set_display(display);
 }
 
 void audio_proc_start(void)
