@@ -61,26 +61,12 @@ static volatile proc_display_t future_display = DISPLAY_FFT;
 static volatile int16_t shift;
 
 void _audio_proc_set_display(proc_display_t disp);
+void sai_tx(void);
+void sai_rx(void);
 
 void audio_proc_set_shift(int16_t s)
 {
     shift = s;
-}
-
-void sai_tx(void)
-{
-    if (HAL_SAI_Transmit_DMA(hsai_tx, (uint8_t *)buffs.hp, BUFF_SIZE * 2) != HAL_OK)
-    {
-        Error_Handler();
-    }
-}
-
-void sai_rx(void)
-{
-    if (HAL_SAI_Receive_DMA(hsai_rx, (uint8_t *)buffs.mic, BUFF_SIZE) != HAL_OK)
-    {
-        Error_Handler();
-    }
 }
 
 void audio_proc_init(SAI_HandleTypeDef *hsai_transmit, SAI_HandleTypeDef *hsai_receive)
@@ -314,5 +300,21 @@ void audio_proc_process(void)
                 break;
             }
         }
+    }
+}
+
+void sai_tx(void)
+{
+    if (HAL_SAI_Transmit_DMA(hsai_tx, (uint8_t *)buffs.hp, BUFF_SIZE * 2) != HAL_OK)
+    {
+        Error_Handler();
+    }
+}
+
+void sai_rx(void)
+{
+    if (HAL_SAI_Receive_DMA(hsai_rx, (uint8_t *)buffs.mic, BUFF_SIZE) != HAL_OK)
+    {
+        Error_Handler();
     }
 }
