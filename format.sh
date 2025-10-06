@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 for file in Core/Src/* Core/Inc/*; do
 	case "${file}" in
 		*stm32f4xx*)
@@ -19,3 +21,5 @@ for file in Core/Src/* Core/Inc/*; do
 	esac
 done
 
+# Change windows CRLF with unix LF
+find Core -type f -exec 'dos2unix' '{}' ';'
