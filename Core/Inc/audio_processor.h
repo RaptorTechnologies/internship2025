@@ -23,7 +23,7 @@ void audio_proc_process(void);
 void audio_proc_start(void);
 void audio_proc_stop(void);
 void audio_proc_set_shift(int16_t s);
-void audio_proc_set_display(proc_display_t disp);
-proc_display_t audio_proc_get_display(void);
+void audio_proc_set_display_mode(proc_display_t disp);
+proc_display_t audio_proc_get_display_mode(void);
 
 #endif /* INC_AUDIO_PROCESSOR_H_ */

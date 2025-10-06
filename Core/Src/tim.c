@@ -350,9 +350,9 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef *tim_baseHandle)
         __HAL_RCC_TIM1_CLK_ENABLE();
 
         /* TIM1 interrupt Init */
-        HAL_NVIC_SetPriority(TIM1_BRK_TIM9_IRQn, 0, 0);
+        HAL_NVIC_SetPriority(TIM1_BRK_TIM9_IRQn, 1, 0);
         HAL_NVIC_EnableIRQ(TIM1_BRK_TIM9_IRQn);
-        HAL_NVIC_SetPriority(TIM1_CC_IRQn, 1, 1);
+        HAL_NVIC_SetPriority(TIM1_CC_IRQn, 2, 0);
         HAL_NVIC_EnableIRQ(TIM1_CC_IRQn);
         /* USER CODE BEGIN TIM1_MspInit 1 */
 
@@ -367,7 +367,7 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef *tim_baseHandle)
         __HAL_RCC_TIM2_CLK_ENABLE();
 
         /* TIM2 interrupt Init */
-        HAL_NVIC_SetPriority(TIM2_IRQn, 2, 2);
+        HAL_NVIC_SetPriority(TIM2_IRQn, 3, 0);
         HAL_NVIC_EnableIRQ(TIM2_IRQn);
         /* USER CODE BEGIN TIM2_MspInit 1 */
 
@@ -393,7 +393,7 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef *tim_baseHandle)
         __HAL_RCC_TIM4_CLK_ENABLE();
 
         /* TIM4 interrupt Init */
-        HAL_NVIC_SetPriority(TIM4_IRQn, 2, 2);
+        HAL_NVIC_SetPriority(TIM4_IRQn, 3, 0);
         HAL_NVIC_EnableIRQ(TIM4_IRQn);
         /* USER CODE BEGIN TIM4_MspInit 1 */
 
@@ -408,7 +408,7 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef *tim_baseHandle)
         __HAL_RCC_TIM5_CLK_ENABLE();
 
         /* TIM5 interrupt Init */
-        HAL_NVIC_SetPriority(TIM5_IRQn, 1, 1);
+        HAL_NVIC_SetPriority(TIM5_IRQn, 2, 0);
         HAL_NVIC_EnableIRQ(TIM5_IRQn);
         /* USER CODE BEGIN TIM5_MspInit 1 */
 
@@ -423,7 +423,7 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef *tim_baseHandle)
         __HAL_RCC_TIM6_CLK_ENABLE();
 
         /* TIM6 interrupt Init */
-        HAL_NVIC_SetPriority(TIM6_DAC_IRQn, 1, 1);
+        HAL_NVIC_SetPriority(TIM6_DAC_IRQn, 3, 0);
         HAL_NVIC_EnableIRQ(TIM6_DAC_IRQn);
         /* USER CODE BEGIN TIM6_MspInit 1 */
 
@@ -438,7 +438,7 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef *tim_baseHandle)
         __HAL_RCC_TIM9_CLK_ENABLE();
 
         /* TIM9 interrupt Init */
-        HAL_NVIC_SetPriority(TIM1_BRK_TIM9_IRQn, 0, 0);
+        HAL_NVIC_SetPriority(TIM1_BRK_TIM9_IRQn, 1, 0);
         HAL_NVIC_EnableIRQ(TIM1_BRK_TIM9_IRQn);
         /* USER CODE BEGIN TIM9_MspInit 1 */
 
@@ -649,26 +649,26 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 
         if (is_state_on(AUDIO_MODULATOR))
         {
-            switch (audio_proc_get_display())
+            switch (audio_proc_get_display_mode())
             {
                 case DISPLAY_FFT:
                 {
-                    audio_proc_set_display(DISPLAY_HP_DATA);
+                    audio_proc_set_display_mode(DISPLAY_HP_DATA);
                     break;
                 }
                 case DISPLAY_HP_DATA:
                 {
-                    audio_proc_set_display(DISPLAY_MIC_DATA);
+                    audio_proc_set_display_mode(DISPLAY_MIC_DATA);
                     break;
                 }
                 case DISPLAY_MIC_DATA:
                 {
-                    audio_proc_set_display(DISPLAY_FFT);
+                    audio_proc_set_display_mode(DISPLAY_FFT);
                     break;
                 }
                 default:
                 {
-                    audio_proc_set_display(DISPLAY_FFT);
+                    audio_proc_set_display_mode(DISPLAY_FFT);
                     break;
                 }
             }

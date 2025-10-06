@@ -60,7 +60,7 @@ static volatile proc_display_t future_display = DISPLAY_FFT;
 // Shift is set in audio_proc_set_shift which is called in an interrupt
 static volatile int16_t shift;
 
-void _audio_proc_set_display(proc_display_t disp);
+static void audio_proc_draw_display(proc_display_t disp);
 void sai_tx(void);
 void sai_rx(void);
 
@@ -85,8 +85,8 @@ void audio_proc_init(SAI_HandleTypeDef *hsai_transmit, SAI_HandleTypeDef *hsai_r
         Error_Handler();
     }
 
-    audio_proc_set_display(display);
-    _audio_proc_set_display(display);
+    audio_proc_set_display_mode(display);
+    audio_proc_draw_display(display);
 }
 
 void audio_proc_start(void)
@@ -109,12 +109,17 @@ void audio_proc_stop(void)
 }
 
 // We actually change the display type only in the next event loop so we don't delay interrupts
-void audio_proc_set_display(proc_display_t disp)
+void audio_proc_set_display_mode(proc_display_t disp)
 {
     future_display = disp;
 }
 
-void _audio_proc_set_display(proc_display_t disp)
+proc_display_t audio_proc_get_display_mode(void)
+{
+    return display;
+}
+
+static void audio_proc_draw_display(proc_display_t disp)
 {
     switch (disp)
     {
@@ -146,11 +151,6 @@ void _audio_proc_set_display(proc_display_t disp)
     }
 
     display = disp;
-}
-
-proc_display_t audio_proc_get_display(void)
-{
-    return display;
 }
 
 void HAL_SAI_TxCpltCallback(SAI_HandleTypeDef *hsai)
@@ -269,7 +269,7 @@ void audio_proc_process(void)
 
         if (future_display != display)
         {
-            _audio_proc_set_display(future_display);
+            audio_proc_draw_display(future_display);
         }
 
         switch (display)
