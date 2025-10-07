@@ -5,8 +5,8 @@
  *      Author: Andrei Trif
  */
 
-#ifndef INC_AUDIO_PROCESSOR_H_
-#define INC_AUDIO_PROCESSOR_H_
+#ifndef INC_AUDIO_BUFFERS_H_
+#define INC_AUDIO_BUFFERS_H_
 
 #include <stdint.h>
 

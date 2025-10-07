@@ -34,7 +34,6 @@
 #include "../../../Drivers/BSP/STM324x9I_EVAL/stm324x9i_eval_lcd.h"
 #include "audio_processor.h"
 #include "flow.h"
-#include "graph.h"
 #include "queue.h"
 #include "stdio.h"
 #include "stm32f429xx.h"
@@ -125,11 +124,6 @@ int main(void)
     BSP_LCD_LayerDefaultInit(1, LCD_FB_START_ADDRESS);
     BSP_LCD_SelectLayer(1);
 
-    const int width = 128;
-    const int height = 50;
-    graph_init(width, height, "Frequency bins", "Amplitude", "FFT graph");
-    graph_draw_axis();
-
     wm8994_t w;
 
     // We need the MCLK for codec configuration
@@ -146,14 +140,8 @@ int main(void)
     /* Infinite loop */
     /* USER CODE BEGIN WHILE */
     uint32_t current_command;
-    int x = 0;
-    int y = 0;
     while (1)
     {
-        x = (x + 1) % width;
-        y = (y + 1) % height;
-        graph_update_x_value(x, y);
-        HAL_Delay(1);
         /* USER CODE END WHILE */
 
         /* USER CODE BEGIN 3 */

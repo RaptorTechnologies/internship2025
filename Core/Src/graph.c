@@ -99,8 +99,7 @@ void graph_draw_axis(void)
 
 void graph_change_mode(graph_display_mode_t display_mode)
 {
-    BSP_LCD_SetTextColor(bg_color);
-    BSP_LCD_FillRect(x_gap, y_gap, w - 2 * x_gap, h - 2 * y_gap);
+    BSP_LCD_Clear(bg_color);
     mode = display_mode;
 }
 
@@ -114,10 +113,12 @@ void graph_update_x_value(uint32_t x, uint32_t y)
     {
         case MODE_BAR:
         {
-            BSP_LCD_FillRect(screen_x, y_gap, pixels_per_sample, h - 2 * y_gap);
+            BSP_LCD_FillRect(screen_x + pixels_per_sample / 2, y_gap, pixels_per_sample / 2,
+                             h - 2 * y_gap);
 
             BSP_LCD_SetTextColor(line_color[y / intensity_div]);
-            BSP_LCD_FillRect(screen_x, screen_y, pixels_per_sample, h - screen_y - y_gap);
+            BSP_LCD_FillRect(screen_x + pixels_per_sample / 2, screen_y, pixels_per_sample / 2,
+                             h - screen_y - y_gap);
             break;
         }
         case MODE_POINT:

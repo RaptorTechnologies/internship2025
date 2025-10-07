@@ -5,11 +5,11 @@
  *      Author: Andrei Trif
  */
 
+#include "audio_processor.h"
 #include "arm_math.h"
 #include "audio_buffers.h"
+#include "graph.h"
 #include "main.h"
-#include "stm32f4xx_hal.h"
-#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -21,6 +21,8 @@ static int16_t fft_buff[BUFF_SIZE * 4];
 static int16_t frame[BUFF_SIZE * 2];
 static int16_t raw_prev_buff[BUFF_SIZE];
 static int16_t prev_buff[BUFF_SIZE];
+
+static int16_t graph_buff[BUFF_SIZE * 3];
 
 static buffs_t buffs;
 static SAI_HandleTypeDef *hsai_tx;
@@ -52,28 +54,19 @@ const q15_t hann[256] = {
     3612,  3212,  2811,  2410,  2009,  1608,  1206,  804,   402
 };
 
+static proc_display_t display = DISPLAY_FFT;
+static volatile proc_display_t future_display = DISPLAY_FFT;
+
 // Shift is set in audio_proc_set_shift which is called in an interrupt
 static volatile int16_t shift;
+
+static void audio_proc_draw_display(proc_display_t disp);
+void sai_tx(void);
+void sai_rx(void);
 
 void audio_proc_set_shift(int16_t s)
 {
     shift = s;
-}
-
-void sai_tx(void)
-{
-    if (HAL_SAI_Transmit_DMA(hsai_tx, (uint8_t *)buffs.hp, BUFF_SIZE * 2) != HAL_OK)
-    {
-        Error_Handler();
-    }
-}
-
-void sai_rx(void)
-{
-    if (HAL_SAI_Receive_DMA(hsai_rx, (uint8_t *)buffs.mic, BUFF_SIZE) != HAL_OK)
-    {
-        Error_Handler();
-    }
 }
 
 void audio_proc_init(SAI_HandleTypeDef *hsai_transmit, SAI_HandleTypeDef *hsai_receive)
@@ -91,6 +84,9 @@ void audio_proc_init(SAI_HandleTypeDef *hsai_transmit, SAI_HandleTypeDef *hsai_r
     {
         Error_Handler();
     }
+
+    audio_proc_set_display_mode(display);
+    audio_proc_draw_display(display);
 }
 
 void audio_proc_start(void)
@@ -110,6 +106,51 @@ void audio_proc_stop(void)
     {
         Error_Handler();
     }
+}
+
+// We actually change the display type only in the next event loop so we don't delay interrupts
+void audio_proc_set_display_mode(proc_display_t disp)
+{
+    future_display = disp;
+}
+
+proc_display_t audio_proc_get_display_mode(void)
+{
+    return display;
+}
+
+static void audio_proc_draw_display(proc_display_t disp)
+{
+    switch (disp)
+    {
+        case DISPLAY_FFT:
+        {
+            graph_change_mode(MODE_BAR);
+            graph_init(BUFF_SIZE / 2, (1 << 17) - 1, "Frequency bins", "Amplitude", "FFT");
+            graph_draw_axis();
+            break;
+        }
+        case DISPLAY_HP_DATA:
+        {
+            graph_change_mode(MODE_POINT);
+            graph_init(BUFF_SIZE, (1 << 17) - 1, "Time", "Amplitude", "Headphones");
+            graph_draw_axis();
+            break;
+        }
+        case DISPLAY_MIC_DATA:
+        {
+            graph_change_mode(MODE_POINT);
+            graph_init(BUFF_SIZE, (1 << 17) - 1, "Time", "Amplitude", "Microphone");
+            graph_draw_axis();
+            break;
+        }
+        default:
+        {
+            return;
+        }
+    }
+
+    display = disp;
 }
 
 void HAL_SAI_TxCpltCallback(SAI_HandleTypeDef *hsai)
@@ -157,10 +198,14 @@ void audio_proc_process(void)
 {
     if (buffs_get_done(&buffs) >= 2)
     {
+        // Build the frame using the previous window and the current window
         memcpy(frame, raw_prev_buff, BUFF_SIZE * 2);
         memcpy(frame + BUFF_SIZE, buffs.fft, BUFF_SIZE * 2);
         memcpy(raw_prev_buff, buffs.fft, BUFF_SIZE * 2);
 
+        memcpy(graph_buff, frame, BUFF_SIZE * 2);
+
+        // Apply hann window to frame
         arm_mult_q15(frame, hann, frame, BUFF_SIZE * 2);
 
         arm_rfft_q15(&fft_inst, frame, fft_buff);
@@ -195,14 +240,22 @@ void audio_proc_process(void)
         fft_buff[BUFF_SIZE * 2] = tmp2;
         fft_buff[BUFF_SIZE * 2 + 1] = 0;
 
+        // Move frequency magnitudes to graph buffer
+        arm_cmplx_mag_squared_q15(fft_buff, graph_buff + BUFF_SIZE, BUFF_SIZE);
+
         arm_rfft_q15(&fft_inst_inv, fft_buff, frame);
 
+        // Scale up rfft output
         arm_shift_q15(frame, 7, frame, BUFF_SIZE * 2);
 
+        // Apply hann again to prevent saturating the ends of the buffer
         arm_mult_q15(frame, hann, frame, BUFF_SIZE * 2);
 
+        // Get the current window by adding to the previous window
         arm_add_q15(frame, prev_buff, buffs.fft, BUFF_SIZE);
         memcpy(prev_buff, frame + BUFF_SIZE, BUFF_SIZE * 2);
+
+        memcpy(graph_buff + BUFF_SIZE * 2, buffs.fft, BUFF_SIZE * 2);
 
         // Headphones take stereo data, so we duplicate each value in our fft
         // buffer
@@ -213,5 +266,55 @@ void audio_proc_process(void)
         }
 
         buffs_flush(&buffs);
+
+        if (future_display != display)
+        {
+            audio_proc_draw_display(future_display);
+        }
+
+        switch (display)
+        {
+            case DISPLAY_FFT:
+            {
+                for (int i = 0; i < BUFF_SIZE / 2; ++i)
+                {
+                    graph_update_x_value(i, graph_buff[BUFF_SIZE + i] << 7);
+                }
+                break;
+            }
+            case DISPLAY_HP_DATA:
+            {
+                for (int i = 0; i < BUFF_SIZE; ++i)
+                {
+                    graph_update_x_value(i, (uint32_t)graph_buff[BUFF_SIZE * 2 + i] +
+                                                ((1 << 17) - 1) / 2);
+                }
+                break;
+            }
+            case DISPLAY_MIC_DATA:
+            {
+                for (int i = 0; i < BUFF_SIZE; ++i)
+                {
+                    graph_update_x_value(i, (uint32_t)graph_buff[i] + ((1 << 17) - 1) / 2);
+                }
+                break;
+            }
+        }
+    }
+}
+
+void sai_tx(void)
+{
+    if (HAL_SAI_Transmit_DMA(hsai_tx, (uint8_t *)buffs.hp, BUFF_SIZE * 2) != HAL_OK)
+    {
+        Error_Handler();
+    }
+}
+
+void sai_rx(void)
+{
+    if (HAL_SAI_Receive_DMA(hsai_rx, (uint8_t *)buffs.mic, BUFF_SIZE) != HAL_OK)
+    {
+        Error_Handler();
     }
 }

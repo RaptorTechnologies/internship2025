@@ -84,7 +84,7 @@ void MX_GPIO_Init(void)
     HAL_GPIO_Init(Toggle1_GPIO_Port, &GPIO_InitStruct);
 
     /* EXTI interrupt init*/
-    HAL_NVIC_SetPriority(EXTI15_10_IRQn, 0, 0);
+    HAL_NVIC_SetPriority(EXTI15_10_IRQn, 2, 0);
     HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
 }
 
@@ -95,8 +95,9 @@ void HAL_GPIO_EXTI_Callback(uint16_t pin)
     // the pin is the right one and we haven't started
     // debouncing a previour press, we can start debouncing
     // the current press.
-    if ((is_state_on(PUSHBUTTON_TOGGLE) || is_state_on(BUTTON_INTERVAL)) && (pin == Button_Pin) &&
-        (HAL_TIM_Base_GetState(&htim5) != HAL_TIM_STATE_BUSY))
+    if ((is_state_on(PUSHBUTTON_TOGGLE) || is_state_on(BUTTON_INTERVAL) ||
+         is_state_on(AUDIO_MODULATOR)) &&
+        (pin == Button_Pin) && (HAL_TIM_Base_GetState(&htim5) != HAL_TIM_STATE_BUSY))
     {
         if (HAL_TIM_Base_Start_IT(&htim5) != HAL_OK)
         {
